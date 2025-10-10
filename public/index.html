@@ -1,46 +1,213 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" class="h-full">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>ALESIS sold by MICROLESS • Electronic Drum Range</title>
-  <meta name="color-scheme" content="dark"/>
-  <link rel="stylesheet" href="./styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Alesis Soundstage • Electronic Drum Kits, Amps & Accessories</title>
+  <meta name="theme-color" content="#111111" />
+  <meta name="color-scheme" content="dark" />
+
+  <!-- Tailwind CDN (fine for now; you can switch to a compiled CSS later) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { yellow: '#facc15', yellowDark: '#eab308', ink: '#0b0b0b' }
+          },
+          borderRadius: { xl: '12px' }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* compact utility styles to match the reference visuals */
+    .chip{font-size:.78rem;padding:.22rem .6rem;border-radius:.5rem;border:1px solid #334155;color:#cbd5e1;background:#111827aa}
+    .pill{font-size:.78rem;padding:.35rem .7rem;border-radius:.625rem;border:1px solid #3f3f46;background:#111827aa}
+    .shadow-card{box-shadow:0 1px 0 rgba(255,255,255,.04),0 12px 30px rgba(0,0,0,.35)}
+    .img-frame{position:relative;overflow:hidden;border-radius:12px;background:#0b0b0b}
+    .img-16x10{aspect-ratio:16/10}
+    .img-cover{width:100%;height:100%;object-fit:cover;display:block}
+    .img-contain{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+    .price-badge{display:inline-flex;gap:.4rem;align-items:center;border:1px solid #433; background:#111; color:#facc15; border-radius:999px; padding:.18rem .6rem}
+    .price-badge .value{font-weight:700;font-size:.84rem}
+    .demo-badge{position:absolute;left:.5rem;top:.5rem;background:#111827d9;border:1px solid #334155;border-radius:.5rem;padding:.15rem .45rem;font-size:.7rem;color:#111;box-shadow:inset 0 0 0 9999px #facc15}
+    .navGlass{background:linear-gradient(180deg, rgba(17,17,17,.85), rgba(17,17,17,.65));backdrop-filter:blur(8px)}
+    .badge-seller{font-size:.72rem;font-weight:800;background:#facc15;color:#111;padding:.2rem .45rem;border-radius:.4rem}
+  </style>
 </head>
-<body>
-  <header class="topbar">
-    <div class="brand">
-      <span class="brand__title">ALESIS</span>
-      <span class="brand__sold">sold by MICROLESS</span>
-    </div>
-    <div class="actions">
-      <button id="compareBtn" class="btn btn--hollow">Compare <span id="compareCount">0</span></button>
-      <button id="findBtn" class="btn btn--red">Find my kit</button>
+
+<body class="h-full bg-black text-zinc-100">
+  <!-- Sticky top bar -->
+  <header class="sticky top-0 z-40 border-b border-zinc-800 navGlass">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-2">
+      <div class="flex items-center justify-between">
+        <!-- left: brand + seller -->
+        <div class="flex items-center gap-3">
+          <span class="text-sm tracking-widest font-black">ALESIS</span>
+          <span class="badge-seller">sold by MICROLESS</span>
+        </div>
+        <!-- right: compare + find -->
+        <div class="flex items-center gap-3">
+          <button id="btnCompareShelf"
+                  class="text-xs sm:text-sm font-semibold px-3 py-2 rounded-lg border border-zinc-600 hover:bg-zinc-800">
+            Compare <span id="compareCount">0</span>
+          </button>
+          <button id="btnFindTop"
+                  class="text-xs sm:text-sm font-semibold px-3 py-2 rounded-lg bg-brand-yellow text-black border border-brand-yellow hover:bg-brand-yellowDark">
+            Find my kit
+          </button>
+        </div>
+      </div>
     </div>
   </header>
 
-  <main class="wrap">
-    <h1 class="h1">Electronic Drum Range</h1>
-    <p class="sub">Compare features and choose the perfect Alesis kit for practice, recording, or performance.</p>
-
-    <div class="tabs" id="tabs">
-      <button class="chip chip--active" data-key="all">All</button>
-      <button class="chip" data-key="Electronic Drum Kits">Electronic Drum Kits</button>
-      <button class="chip" data-key="Multipads & Drum Machines">Multipads & Drum Machines</button>
-      <button class="chip" data-key="Drum Amplification">Drum Amplification</button>
-      <button class="chip" data-key="Accessories">Accessories</button>
-      <button class="chip" data-key="On Demo">On Demo</button>
+  <!-- Hero -->
+  <section class="border-b border-zinc-900">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+      <div class="grid md:grid-cols-2 gap-8 items-center">
+        <div>
+          <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold leading-tight">
+            Electronic Drum Kits, Amps & Accessories
+          </h1>
+          <p class="mt-2 text-zinc-300 max-w-xl">
+            Compare features and choose the perfect Alesis kit for practice, recording, or performance.
+          </p>
+          <div class="mt-5 flex items-center gap-3">
+            <button id="btnBrowse" class="pill hover:bg-zinc-800">Browse kits</button>
+            <button id="btnBest"
+                    class="pill border-brand-yellow text-black bg-brand-yellow hover:bg-brand-yellowDark hover:border-brand-yellow">
+              Best value
+            </button>
+          </div>
+        </div>
+        <div class="img-frame img-16x10 border border-zinc-800 shadow-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Alesis_logo.svg"
+               alt="Alesis" class="img-contain" />
+        </div>
+      </div>
     </div>
+  </section>
 
-    <section id="grid" class="grid"></section>
+  <!-- Catalog (app.js attaches here) -->
+  <div id="app">
+    <main id="catalog" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+      <!-- Filters -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-zinc-400 mr-1">Filter:</span>
+          <button class="chip ring-2 ring-yellow-400" data-filter="All">All</button>
+          <button class="chip" data-filter="Electronic Drum Kits">Electronic Drum Kits</button>
+          <button class="chip" data-filter="Multipads & Drum Machines">Multipads & Drum Machines</button>
+          <button class="chip" data-filter="Drum Amplification">Drum Amplification</button>
+          <button class="chip" data-filter="Accessories">Accessories</button>
+          <button class="chip" data-filter="On Demo">On Demo</button>
+        </div>
+        <label class="text-xs flex items-center gap-2 select-none">
+          <input id="demoToggle" type="checkbox" />
+          On demo only
+        </label>
+      </div>
 
-    <div id="shelf" class="shelf hidden">
-      <div>Selected for compare: <b id="shelfCount">0</b></div>
-      <button id="openCompare" class="btn btn--hollow">Open compare</button>
+      <!-- Cards injected by /app.js -->
+      <div id="kitGrid" class="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+      <!-- Compare shelf (app.js toggles .hidden and counter) -->
+      <div id="compareShelf" class="mt-6">
+        <div class="hidden bg-zinc-900/70 border border-zinc-800 rounded-xl p-3 flex items-center justify-between">
+          <div class="text-sm">Selected for compare: <b id="compareCountShelf">0</b></div>
+          <button id="compareOpen"
+                  class="text-xs sm:text-sm font-semibold px-3 py-2 rounded-lg border border-zinc-600 hover:bg-zinc-800">
+            Open compare
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-12 border-t border-zinc-900">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 text-sm text-zinc-400">
+      © <span id="year"></span> GuitarStore.ae — All rights reserved.
     </div>
-  </main>
+  </footer>
 
-  <script src="./env.js"></script>
-  <script src="./app.js" type="module"></script>
+  <!-- Runtime env + app -->
+  <script src="/env.js"></script>
+  <script type="module" src="/app.js"></script>
+
+  <!-- Glue for buttons & basic behaviors (works with your existing app.js API) -->
+  <script>
+    const $ = (s, r = document) => r.querySelector(s);
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Scroll to the grid
+    $('#btnBrowse')?.addEventListener('click', () =>
+      document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })
+    );
+    $('#btnFindTop')?.addEventListener('click', () =>
+      document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })
+    );
+
+    // Wire demo-only toggle (if helpers exist in app.js)
+    $('#demoToggle')?.addEventListener('change', e => {
+      if (typeof window.setFilter === 'function') window.setFilter({ demoOnly: e.target.checked });
+      if (typeof window.render === 'function') window.render();
+    });
+
+    // Compare counter mirroring (if your app.js maintains window.state.selected)
+    function syncCompareCount() {
+      const n = window.state?.selected?.size || 0;
+      const a = document.getElementById('compareCount');
+      const b = document.getElementById('compareCountShelf');
+      if (a) a.textContent = n;
+      if (b) b.textContent = n;
+      const shelf = document.querySelector('#compareShelf > div');
+      if (shelf) shelf.classList.toggle('hidden', n < 2);
+    }
+
+    // Expose hook for app.js to call when selection changes
+    window.__onSelectionChanged = syncCompareCount;
+
+    // Best value button (opens detail if your app.js exposes openDetail)
+    function whenKitsReady(cb){
+      if (window.state?.byId?.size) { cb(); return; }
+      const t = setInterval(() => {
+        if (window.state?.byId?.size) { clearInterval(t); cb(); }
+      }, 150);
+      setTimeout(() => clearInterval(t), 10000);
+    }
+
+    function pickBestValue(){
+      const items = Array.from(window.state?.byId?.values?.() || [])
+        .filter(k => k?.is_active && typeof k.price === 'number' && k.price > 0);
+      if (!items.length) return null;
+      const scoreOf = (k) => {
+        const feats = Array.isArray(k.features) ? k.features.length : 0;
+        const t = k.traits || {};
+        const bonus = (t.triple?2:0) + (t.dual?1:0) + (t.mesh?1:0) + (t.bluetooth?.5:0) + (t.usb?.5:0);
+        return (1 + feats + bonus) / k.price;
+      };
+      return items.map(k => ({ k, s: scoreOf(k) })).sort((a,b)=> b.s - a.s)[0].k;
+    }
+
+    whenKitsReady(() => {
+      $('#btnBest')?.addEventListener('click', () => {
+        const best = pickBestValue() || Array.from(window.state.byId.values())[0];
+        if (best && typeof window.openDetail === 'function') window.openDetail(best.id);
+      });
+
+      $('#btnCompareShelf')?.addEventListener('click', () => {
+        if (window.state?.selected?.size >= 2 && typeof window.openCompare === 'function') {
+          window.openCompare();
+        }
+      });
+
+      // keep the compare count current
+      syncCompareCount();
+    });
+  </script>
 </body>
 </html>
