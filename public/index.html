@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ALESIS sold by MICROLESS • Electronic Drum Range</title>
+  <meta name="color-scheme" content="dark"/>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand__title">ALESIS</span>
+      <span class="brand__sold">sold by MICROLESS</span>
+    </div>
+    <div class="actions">
+      <button id="compareBtn" class="btn btn--hollow">Compare <span id="compareCount">0</span></button>
+      <button id="findBtn" class="btn btn--red">Find my kit</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1 class="h1">Electronic Drum Range</h1>
+    <p class="sub">Compare features and choose the perfect Alesis kit for practice, recording, or performance.</p>
+
+    <div class="tabs" id="tabs">
+      <button class="chip chip--active" data-key="all">All</button>
+      <button class="chip" data-key="Electronic Drum Kits">Electronic Drum Kits</button>
+      <button class="chip" data-key="Multipads & Drum Machines">Multipads & Drum Machines</button>
+      <button class="chip" data-key="Drum Amplification">Drum Amplification</button>
+      <button class="chip" data-key="Accessories">Accessories</button>
+      <button class="chip" data-key="On Demo">On Demo</button>
+    </div>
+
+    <section id="grid" class="grid"></section>
+
+    <div id="shelf" class="shelf hidden">
+      <div>Selected for compare: <b id="shelfCount">0</b></div>
+      <button id="openCompare" class="btn btn--hollow">Open compare</button>
+    </div>
+  </main>
+
+  <script src="./env.js"></script>
+  <script src="./app.js" type="module"></script>
+</body>
+</html>
