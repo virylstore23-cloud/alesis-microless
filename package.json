@@ -1,0 +1,12 @@
+{
+  "name": "alesis-microless",
+  "private": true,
+  "scripts": {
+    "dev": "serve public -l 5173",
+    "build:css": "tailwindcss -i src/input.css -o public/styles.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.13",
+    "serve": "^14.2.1"
+  }
+}
