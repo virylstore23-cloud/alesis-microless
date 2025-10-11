@@ -87,7 +87,7 @@
 
   /* dialogs */
   dialog{border:1px solid var(--glass-brd); border-radius:18px; padding:0; background:rgba(10,14,18,.92);
-    color:var(--text); width:min(1000px,96vw)}
+    color:var(--text); width:min(1100px,96vw)}
   dialog::backdrop{background:rgba(0,0,0,.6)}
   .sheet{display:grid; grid-template-columns:1.1fr 1fr; gap:16px; padding:14px}
   .left{background:var(--panel); border:1px solid var(--glass-brd); border-radius:16px; padding:12px}
@@ -105,7 +105,6 @@
   .xbtn{position:absolute; top:8px; right:8px; background:transparent; border:1px solid var(--glass-brd); color:#fff; border-radius:10px; padding:6px 10px; cursor:pointer}
 
   /* compare */
-  #cmp{width:min(1100px,96vw)}
   #cmp .cols{display:grid; grid-auto-flow:column; grid-auto-columns:minmax(300px,1fr); gap:14px; padding:12px; overflow-x:auto; -webkit-overflow-scrolling:touch}
   #cmp .col{background:var(--glass); border:1px solid var(--glass-brd); border-radius:14px; overflow:hidden}
   #cmp .col .pad{padding:12px}
@@ -130,7 +129,7 @@
 </head>
 
 <body>
-  <!-- Inline Dirham icon symbol (your SVG path, legal/local) -->
+  <!-- Inline Dirham icon symbol (legal/local) -->
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
     <symbol id="aed-dirham" viewBox="0 0 344.84 299.91">
       <path fill="currentColor" d="M342.14,140.96l2.7,2.54v-7.72c0-17-11.92-30.84-26.56-30.84h-23.41C278.49,36.7,222.69,0,139.68,0c-52.86,0-59.65,0-109.71,0,0,0,15.03,12.63,15.03,52.4v52.58h-27.68c-5.38,0-10.43-2.08-14.61-6.01l-2.7-2.54v7.72c0,17.01,11.92,30.84,26.56,30.84h18.44s0,29.99,0,29.99h-27.68c-5.38,0-10.43-2.07-14.61-6.01l-2.7-2.54v7.71c0,17,11.92,30.82,26.56,30.82h18.44s0,54.89,0,54.89c0,38.65-15.03,50.06-15.03,50.06h109.71c85.62,0,139.64-36.96,155.38-104.98h32.46c5.38,0,10.43,2.07,14.61,6l2.7,2.54v-7.71c0-17-11.92-30.83-26.56-30.83h-18.9c.32-4.88.49-9.87.49-15s-.18-10.11-.51-14.99h28.17c5.37,0,10.43,2.07,14.61,6.01ZM89.96,15.01h45.86c61.7,0,97.44,27.33,108.1,89.94l-153.96.02V15.01ZM136.21,284.93h-46.26v-89.98l153.87-.02c-9.97,56.66-42.07,88.38-107.61,90ZM247.34,149.96c0,5.13-.11,10.13-.34,14.99l-157.04.02v-29.99l157.05-.02c.22,4.84.33,9.83.33,15Z"/>
@@ -173,9 +172,8 @@
         <div id="dname" style="font-weight:900; font-size:18px; margin:2px 0 8px"></div>
 
         <div class="section"><h4>Description</h4><div id="ddesc" class="muted">—</div></div>
-        <div class="section"><h4>Key Features</h4><ul id="dfeat"></ul></div>
         <div class="section"><h4>What's Included</h4><ul id="dinc"></ul></div>
-        <div class="section" id="dni" style="display:none"><h4>What's NOT Included</h4><ul id="dnot"></ul></div>
+        <div class="section"><h4>What's NOT Included</h4><ul id="dnot"></ul></div>
         <div class="section"><h4>Quick Specs</h4><table class="specs" id="dspec"></table></div>
         <div style="margin-top:10px"><button class="btn btn-ghost" data-close>Close</button></div>
       </div>
@@ -247,7 +245,9 @@
     const fmt = new Intl.NumberFormat('en-AE',{style:'decimal',minimumFractionDigits:2,maximumFractionDigits:2});
     const AED = v => (v==null||v==='') ? '—'
       : `<svg class="aed-icon" viewBox="0 0 344.84 299.91"><use href="#aed-dirham"></use></svg><span class="amt">${fmt.format(+v)}</span>`;
+
     const getUPC = r => r.upc_code || r.upc || r.ean || r.barcode || null;
+
     const toArray = v=>{
       if (Array.isArray(v)) return v;
       if (v==null||v===false) return [];
@@ -257,10 +257,31 @@
       }
       return [];
     };
+
+    const get = (obj, path) => path.split('.').reduce((o,k)=> (o && o[k]!==undefined ? o[k] : undefined), obj);
+
+    // === Alias map so UI can read fields from either top-level or specs.data ===
+    const ALIASES = {
+      kits_user:   ['kits_user','specs.data.user_kits'],
+      kits_factory:['kits_factory','specs.data.preset_kits'],
+      sounds:      ['sounds','specs.data.sounds_total'],
+      watt_peak:   ['watt_peak','specs.data.watt_peak'],
+      amp_watt_rms:['amp_watt_rms','specs.data.watt_rms']
+    };
+    const readAliased = (r, key)=>{
+      const paths = ALIASES[key] || [key];
+      for (const p of paths){
+        const v = p.includes('.') ? get(r,p) : r[p];
+        if (v !== undefined && v !== null && v !== '') return v;
+      }
+      return undefined;
+    };
+
     const getNotIncluded = r=>{
       const s=r.specs?.not_included||r.specs?.notIncluded||r.specs?.data?.not_included||r.specs?.data?.notIncluded;
       return Array.from(new Set(toArray(s)));
     };
+
     const deriveCategory = r=>{
       if (r.category) return r.category;
       const s=(r.slug||'')+' '+(r.name||'');
@@ -269,6 +290,7 @@
       if (/headphone|clamp|expansion|pack|accessor/i.test(s)) return 'Accessories';
       return 'Drum Kits';
     };
+
     const pickImage=(r,kind='card')=>{
       const direct=(kind==='detail'&&r.detail_image_url)||r.primary_image_url||r.image_url;
       return direct || 'data:image/svg+xml;utf8,'+encodeURIComponent(
@@ -373,29 +395,34 @@
 
     function asList(node, arr){
       node.innerHTML = '';
-      if (!Array.isArray(arr) || !arr.length){ node.innerHTML = '<li>—</li>'; return; }
-      node.innerHTML = arr.map(x=>`<li>${String(x)}</li>`).join('');
+      const list = toArray(arr);
+      if (!list.length){ node.innerHTML = '<li>—</li>'; return; }
+      node.innerHTML = list.map(x=>`<li>${String(x)}</li>`).join('');
     }
     function specRow(label, val){
       let v = (val===true)?'Yes' : (val===false||val==null||val==='')?'—' : val;
       return `<tr><td>${label}</td><td style="text-align:right">${v}</td></tr>`;
     }
+
+    // === qVal now uses alias fallback ===
     function qVal(it, r){
       if (!it) return '—';
       if (it.value!=null) return it.value;
       if (!it.key) return '—';
-      const v = r[it.key];
+      const v = readAliased(r, it.key);
       if (it.format==='yesno') return v ? 'Yes' : 'No';
-      return (v==null||v==='')?'—':v;
+      return (v==null||v==='') ? '—' : v;
     }
+
     function buildQuick(r){
       const quickArr = (r.specs && Array.isArray(r.specs.quick)) ? r.specs.quick : null;
       if (quickArr && quickArr.length) return quickArr;
+
       const cat = deriveCategory(r);
       if (cat==='Drum Amplification'){
         return [
           {label:'Category', value:'Drum Amplification'},
-          {label:'Power', value:(r.watt_peak||r.specs?.data?.watt_peak||'—')+' W peak'},
+          {label:'Power', value:`${readAliased(r,'amp_watt_rms')||'—'} W RMS / ${readAliased(r,'watt_peak')||'—'} W peak`},
           {label:'Bluetooth', key:'bluetooth_audio', format:'yesno'},
           {label:'Inputs', value:r.specs?.data?.inputs || '—'},
           {label:'Outputs', value:r.specs?.data?.outputs || '—'}
@@ -417,8 +444,8 @@
         {label:'USB/MIDI', key:'usb_midi', format:'yesno'},
         {label:'Bluetooth', key:'bluetooth_audio', format:'yesno'},
         {label:'Factory kits', key:'kits_factory'},
-        {label:'User kits', key:'kits_user'},
-        {label:'Sounds', key:'sounds'},
+        {label:'User kits', key:'kits_user'},          // <- now reads specs.data.user_kits if needed
+        {label:'Sounds', key:'sounds'},                 // <- reads specs.data.sounds_total if needed
         {label:'Toms', key:'toms_count'},
         {label:'Crash cymbals', key:'crash_count'},
         {label:'Ride zones', key:'ride_zones'},
@@ -448,16 +475,8 @@
       }
 
       $('#ddesc').textContent = r.description || '—';
-      asList($('#dfeat'), r.features);
       asList($('#dinc'), r.contents);
-
-      const notIncArr = getNotIncluded(r);
-      if (notIncArr.length){
-        $('#dni').style.display = 'block';
-        asList($('#dnot'), notIncArr);
-      } else {
-        $('#dni').style.display = 'none';
-      }
+      asList($('#dnot'), getNotIncluded(r));
 
       const quick = buildQuick(r);
       $('#dspec').innerHTML = quick.map(it => specRow(it.label || it.key || '', qVal(it, r))).join('');
@@ -513,8 +532,8 @@
           const pct = base.price ? Math.round((diff/base.price)*100) : 0;
           const hints = [];
           if ((better.mesh||0) && !base.mesh) hints.push('mesh heads');
-          if ((better.kits_factory||0) > (base.kits_factory||0)) hints.push('more factory kits');
-          if ((better.sounds||0) > (base.sounds||0)) hints.push('more sounds');
+          if ((+readAliased(better,'kits_factory')||0) > (+readAliased(base,'kits_factory')||0)) hints.push('more factory kits');
+          if ((+readAliased(better,'sounds')||0) > (+readAliased(base,'sounds')||0)) hints.push('more sounds');
           if ((better.bluetooth_audio||0) && !base.bluetooth_audio) hints.push('Bluetooth audio');
           if ((better.usb_midi||0) && !base.usb_midi) hints.push('USB/MIDI');
           const why = hints.length ? hints.join(', ') : 'overall higher spec';
