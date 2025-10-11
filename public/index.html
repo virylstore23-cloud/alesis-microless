@@ -6,8 +6,6 @@
 <title>Alesis Sold By Microless</title>
 
 <!-- Preload the AED icon (served from /public/aed.svg) -->
-<link rel="preload" as="image" href="/public/aed.svg" />
-
 <style>
   :root{
     --bg:#000000;
@@ -96,13 +94,6 @@
   .pill.price{max-width:fit-content; width:auto; font-size:15px}
 
   /* AED icon — use MASK directly from /public/aed.svg */
-  .aed-icon{
-    width:16px; height:16px; display:inline-block;
-    background: var(--pill-text);                  /* icon color */
-    -webkit-mask: url('/public/aed.svg') center/contain no-repeat;
-    mask:         url('/public/aed.svg') center/contain no-repeat;
-  }
-
   .muted{color:var(--muted)}
   .tagrow{display:flex; gap:6px; flex-wrap:wrap}
   .tagrow .chip{background:#082b33;border-color:#11424a}
