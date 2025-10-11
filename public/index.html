@@ -22,16 +22,42 @@
 
   html,body{height:100%}
   body{
-    margin:0; color:var(--text); background:#000; /* solid black base */
+    margin:0;
+    color:var(--text);
+    background:#000; /* solid black base */
     font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif;
     -webkit-font-smoothing:antialiased;
 
-    /* black + yellow glow gradients */
+    /* Stronger, wider glow starting top-left and flowing across */
     background-image:
-      radial-gradient(900px 540px at 20% 12%, rgba(255,212,0,0.12) 0, transparent 60%),
-      radial-gradient(900px 540px at 85% 10%, rgba(255,170,0,0.10) 0, transparent 58%),
-      linear-gradient(180deg, #000 0%, #0a0a0a 100%);
+      radial-gradient(1200px 900px at 0% 0%, rgba(255,215,0,0.22) 0%, rgba(255,200,0,0.12) 30%, transparent 70%),
+      radial-gradient(1400px 900px at 55% 20%, rgba(255,170,0,0.10) 0%, transparent 60%),
+      linear-gradient(180deg, #000 0%, #0a0a0a 60%, #000 100%);
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+    overflow-x:hidden;
   }
+  /* Extra buttery-smooth glow layer */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:-25% -20% -20% -25%;
+    pointer-events:none;
+    z-index:-1;
+    background:
+      radial-gradient(1600px 1200px at 0% 0%,
+        rgba(255,215,0,0.18) 0%,
+        rgba(255,190,0,0.10) 28%,
+        rgba(0,0,0,0) 72%),
+      conic-gradient(from 0.25turn at 0% 0%,
+        rgba(255,190,0,0.10) 0%,
+        rgba(0,0,0,0) 35%,
+        rgba(255,160,0,0.08) 55%,
+        rgba(0,0,0,0) 85%);
+    mix-blend-mode:screen;
+    will-change:transform,opacity;
+  }
+
   .wrap{max-width:1160px; margin:28px auto; padding:0 16px}
 
   /* header */
@@ -45,6 +71,9 @@
   .btn:hover{border-color:#3adcf0}
   .btn-primary{background:#ff2b2b; border-color:#ff2b2b}
   .btn-ghost{background:transparent}
+
+  /* yellow suffix in title */
+  .sold-by{ color:#ffd400; font-weight:900; letter-spacing:.2px }
 
   /* filter chips */
   #chips{display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 10px}
@@ -86,8 +115,7 @@
   .right .chiprow{display:flex; gap:8px; align-items:center; margin-bottom:10px}
   .chip.price{background:#0b3f45; border:1px solid #125056}
   .chip.upc{background:#052d33; border:1px solid #0f4950}
-  .section{border:1px solid var(--glass-brd); border-radius:12px; padding:12px; margin-top:12px;
-    background:rgba(7,12,16,.66)}
+  .section{border:1px solid var(--glass-brd); border-radius:12px; padding:12px; margin-top:12px; background:rgba(7,12,16,.66)}
   .section h4{margin:0 0 8px; font-size:16px; font-weight:800; color:#fff}
   .section ul{list-style:disc; padding-left:18px; margin:0}
   .section li::marker{color:#26e3ff}
@@ -128,7 +156,9 @@
       <button id="btnWizard" class="btn btn-primary">Find my kit</button>
     </div>
 
-    <h2 style="margin:0 0 6px">Electronic Drum Range Sold By Microless</h2>
+    <h2 style="margin:0 0 6px">
+      Electronic Drum Range <span class="sold-by">Sold By Microless</span>
+    </h2>
     <div class="muted">Compare features and choose the perfect Alesis kit for practice, recording, or performance.</div>
 
     <div id="chips"></div>
@@ -242,12 +272,9 @@
     /* ===== helpers ===== */
     const $ = (s,el=document)=>el.querySelector(s);
     const $$ = (s,el=document)=>Array.from(el.querySelectorAll(s));
-
     const fmt = new Intl.NumberFormat('en-AE',{style:'decimal',minimumFractionDigits:2,maximumFractionDigits:2});
     const AED = v => (v==null||v==='') ? '—' : `<span class="aed-icon" aria-hidden="true"></span><span class="amt">${fmt.format(+v)}</span>`;
-
     function getUPC(r){ return r.upc_code || r.upc || r.ean || r.barcode || null; }
-
     function pickImage(r,kind='card'){
       const direct = (kind==='detail' && (r.detail_image_url)) || r.primary_image_url || r.image_url;
       return direct || 'data:image/svg+xml;utf8,'+encodeURIComponent(
@@ -258,7 +285,6 @@
         </svg>`
       );
     }
-
     function deriveCategory(r){
       if (r.category) return r.category;
       const s=(r.slug||'')+' '+(r.name||'');
@@ -287,10 +313,7 @@
         (r.specs?.notIncluded) ||
         (r.specs?.data?.not_included) ||
         (r.specs?.data?.notIncluded);
-      const fromTop =
-        r.not_included ||
-        r.notIncluded;
-      const merged = [...toArray(fromSpecs), ...toArray(fromTop)];
+      const merged = toArray(fromSpecs);
       return Array.from(new Set(merged)); // de-dupe
     }
 
@@ -303,9 +326,7 @@
           'id,name,description,price,upc,upc_code,is_active,slug,category',
           'primary_image_url,detail_image_url,on_demo,on_demo_label',
           'features,contents,specs,kits_factory,kits_user,sounds,mesh,usb_midi,bluetooth_audio',
-          'toms_count,crash_count,ride_zones,kick_tower',
-          // fetch potential top-level fields too:
-          'not_included,notIncluded'
+          'toms_count,crash_count,ride_zones,kick_tower'
         ].join(',') + '&order=price.desc.nullslast';
 
       const headers={apikey:window.ENV.SUPABASE_ANON_KEY, Authorization:`Bearer ${window.ENV.SUPABASE_ANON_KEY}`};
@@ -408,7 +429,6 @@
       let v = (val===true)?'Yes' : (val===false||val==null||val==='')?'—' : val;
       return `<tr><td>${label}</td><td style="text-align:right">${v}</td></tr>`;
     }
-
     function qVal(it, r){
       if (!it) return '—';
       if (it.value!=null) return it.value;
@@ -417,7 +437,6 @@
       if (it.format==='yesno') return v ? 'Yes' : 'No';
       return (v==null||v==='')?'—':v;
     }
-
     function buildQuick(r){
       const quickArr = (r.specs && Array.isArray(r.specs.quick)) ? r.specs.quick : null;
       if (quickArr && quickArr.length) return quickArr;
@@ -462,7 +481,6 @@
 
       $('#dimg').src = pickImage(r,'detail');
       $('#dname').textContent = r.name || '';
-
       $('#dprice').innerHTML = AED(r.price);
 
       const upc = getUPC(r);
@@ -476,7 +494,7 @@
       asList($('#dfeat'), r.features);
       asList($('#dinc'), r.contents);
 
-      /* What's NOT included (robust) */
+      /* What's NOT included (from specs.* only) */
       const notIncArr = getNotIncluded(r);
       if (notIncArr.length){
         $('#dni').style.display = 'block';
