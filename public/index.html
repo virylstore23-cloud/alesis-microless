@@ -13,8 +13,8 @@
     --glass-brd:rgba(55,137,153,.35);
     --chip:#0d2e35;
     --chip-brd:#12434d;
-    --pill:#79e4ea;      /* turquoise pill like your screenshot */
-    --pill-text:#062e33; /* dark teal text on turquoise */
+    --pill:#ffd400;      /* yellow price pill */
+    --pill-text:#231a00; /* dark text on yellow */
     --text:#e9f7ff;
     --muted:#a7bdc5;
     --line:rgba(86,150,160,.35);
@@ -29,9 +29,7 @@
     -webkit-font-smoothing:antialiased;
     background-image:
       radial-gradient(1200px 900px at 0% 0%, rgba(255,215,0,0.22) 0%, rgba(255,200,0,0.12) 30%, transparent 70%),
-      radial-gradient(1400px 900px at 55% 20%, rgba(255,170,0,0.10) 0%, transparent 60%),
       linear-gradient(180deg, #000 0%, #0a0a0a 60%, #000 100%);
-    background-repeat:no-repeat;
     background-attachment:fixed;
     overflow-x:hidden;
   }
@@ -67,17 +65,17 @@
   .content{display:flex; flex-direction:column; gap:8px; padding:12px 12px 14px; min-height:176px}
   .title{font-weight:800; margin-top:4px}
 
-  /* price pill */
-  .pill{display:inline-flex; align-items:center; gap:8px;
-    background:var(--pill); color:var(--pill-text); border-radius:9999px; padding:8px 12px; font-weight:800; line-height:1}
-  .pill.price{max-width:fit-content; width:auto; font-size:15px}
+  /* SMALL price pill (applies everywhere) */
+  .pill{
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--pill); color:var(--pill-text);
+    border-radius:9999px; padding:6px 10px; font-weight:800; line-height:1;
+  }
+  .pill.price{max-width:fit-content; width:auto; font-size:13px}
   .pill .amt{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 
-  /* CLEAN DIRHAM ICON (no box, no mask; single inline SVG) */
-  .aed-icon{
-    width:16px; height:16px; display:inline-block; vertical-align:-2px;
-    color: var(--pill-text);
-  }
+  /* Dirham icon (inline, legal) */
+  .aed-icon{ width:14px; height:14px; display:inline-block; vertical-align:-1px; color:var(--pill-text) }
 
   .muted{color:var(--muted)}
   .tagrow{display:flex; gap:6px; flex-wrap:wrap}
@@ -87,7 +85,7 @@
   .foot label{display:flex; align-items:center; gap:8px; color:#a7bdc5; user-select:none}
   .foot input{transform:translateY(1px)}
 
-  /* dialogs etc. (unchanged) */
+  /* dialogs */
   dialog{border:1px solid var(--glass-brd); border-radius:18px; padding:0; background:rgba(10,14,18,.92);
     color:var(--text); width:min(1000px,96vw)}
   dialog::backdrop{background:rgba(0,0,0,.6)}
@@ -106,6 +104,7 @@
   .section li::marker{color:#26e3ff}
   .xbtn{position:absolute; top:8px; right:8px; background:transparent; border:1px solid var(--glass-brd); color:#fff; border-radius:10px; padding:6px 10px; cursor:pointer}
 
+  /* compare */
   #cmp{width:min(1100px,96vw)}
   #cmp .cols{display:grid; grid-auto-flow:column; grid-auto-columns:minmax(300px,1fr); gap:14px; padding:12px; overflow-x:auto; -webkit-overflow-scrolling:touch}
   #cmp .col{background:var(--glass); border:1px solid var(--glass-brd); border-radius:14px; overflow:hidden}
@@ -116,6 +115,7 @@
   #ladder{border-top:1px solid var(--glass-brd); margin:4px 12px 14px; padding-top:10px}
   #ladder .row{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
 
+  /* Compare FAB */
   #compareFab{
     position:fixed; right:16px; bottom:16px; z-index:60; display:none; align-items:center; gap:8px;
     padding:10px 14px; border-radius:999px; background:#ff2b2b; color:#fff; border:1px solid #ff2b2b; cursor:pointer
@@ -130,6 +130,13 @@
 </head>
 
 <body>
+  <!-- Inline Dirham icon symbol (your SVG path, legal/local) -->
+  <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+    <symbol id="aed-dirham" viewBox="0 0 344.84 299.91">
+      <path fill="currentColor" d="M342.14,140.96l2.7,2.54v-7.72c0-17-11.92-30.84-26.56-30.84h-23.41C278.49,36.7,222.69,0,139.68,0c-52.86,0-59.65,0-109.71,0,0,0,15.03,12.63,15.03,52.4v52.58h-27.68c-5.38,0-10.43-2.08-14.61-6.01l-2.7-2.54v7.72c0,17.01,11.92,30.84,26.56,30.84h18.44s0,29.99,0,29.99h-27.68c-5.38,0-10.43-2.07-14.61-6.01l-2.7-2.54v7.71c0,17,11.92,30.82,26.56,30.82h18.44s0,54.89,0,54.89c0,38.65-15.03,50.06-15.03,50.06h109.71c85.62,0,139.64-36.96,155.38-104.98h32.46c5.38,0,10.43,2.07,14.61,6l2.7,2.54v-7.71c0-17-11.92-30.83-26.56-30.83h-18.9c.32-4.88.49-9.87.49-15s-.18-10.11-.51-14.99h28.17c5.37,0,10.43,2.07,14.61,6.01ZM89.96,15.01h45.86c61.7,0,97.44,27.33,108.1,89.94l-153.96.02V15.01ZM136.21,284.93h-46.26v-89.98l153.87-.02c-9.97,56.66-42.07,88.38-107.61,90ZM247.34,149.96c0,5.13-.11,10.13-.34,14.99l-157.04.02v-29.99l157.05-.02c.22,4.84.33,9.83.33,15Z"/>
+    </symbol>
+  </svg>
+
   <div class="wrap">
     <div class="bar">
       <div class="crumbs">ALESIS <span class="tag">DRUMS</span></div>
@@ -147,6 +154,7 @@
     <div id="grid"></div>
   </div>
 
+  <!-- Compare FAB -->
   <button id="compareFab"><span>Compare</span><span id="fabCount" class="bubble">0</span></button>
 
   <!-- Detail modal -->
@@ -158,7 +166,7 @@
       </div>
       <div class="right">
         <div class="chiprow">
-          <span id="dprice" class="pill price"><span class="aed-icon" aria-hidden="true"></span><span class="amt">—</span></span>
+          <span id="dprice" class="pill price"><svg class="aed-icon" viewBox="0 0 344.84 299.91"><use href="#aed-dirham"></use></svg><span class="amt">—</span></span>
           <span id="dupc" class="chip upc" style="display:none"></span>
           <span id="ddemo" class="chip" style="display:none;background:#ffd400;color:#231a00;font-weight:800" title=""></span>
         </div>
@@ -234,22 +242,23 @@
 
   <script>
     /* ===== helpers ===== */
-    const $ = (s,el=document)=>el.querySelector(s);
+    const $  = (s,el=document)=>el.querySelector(s);
     const $$ = (s,el=document)=>Array.from(el.querySelectorAll(s));
     const fmt = new Intl.NumberFormat('en-AE',{style:'decimal',minimumFractionDigits:2,maximumFractionDigits:2});
-    const AED = v => (v==null||v==='') ? '—' : AED_ICON_SVG + `<span class="amt">${fmt.format(+v)}</span>`;
+    const AED = v => (v==null||v==='') ? '—'
+      : `<svg class="aed-icon" viewBox="0 0 344.84 299.91"><use href="#aed-dirham"></use></svg><span class="amt">${fmt.format(+v)}</span>`;
     const getUPC = r => r.upc_code || r.upc || r.ean || r.barcode || null;
-    const toArray = val=>{
-      if (Array.isArray(val)) return val;
-      if (val == null || val === false) return [];
-      if (typeof val === 'string'){
-        try { const j = JSON.parse(val); if (Array.isArray(j)) return j; } catch {}
-        return val.split(/\r?\n|,|•|-\s|\u2022/g).map(s=>s.trim()).filter(Boolean);
+    const toArray = v=>{
+      if (Array.isArray(v)) return v;
+      if (v==null||v===false) return [];
+      if (typeof v==='string'){
+        try{const j=JSON.parse(v); if(Array.isArray(j)) return j;}catch{}
+        return v.split(/\r?\n|,|•|-\s|\u2022/g).map(s=>s.trim()).filter(Boolean);
       }
       return [];
     };
     const getNotIncluded = r=>{
-      const s = r.specs?.not_included || r.specs?.notIncluded || r.specs?.data?.not_included || r.specs?.data?.notIncluded;
+      const s=r.specs?.not_included||r.specs?.notIncluded||r.specs?.data?.not_included||r.specs?.data?.notIncluded;
       return Array.from(new Set(toArray(s)));
     };
     const deriveCategory = r=>{
@@ -260,9 +269,14 @@
       if (/headphone|clamp|expansion|pack|accessor/i.test(s)) return 'Accessories';
       return 'Drum Kits';
     };
-    const pickImage = (r,kind='card')=>{
-      const direct = (kind==='detail' && r.detail_image_url) || r.primary_image_url || r.image_url;
-      return direct || 'data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400"><rect width="100%" height="100%" fill="#f4f6f8"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui,Segoe UI,Arial" font-size="22">Image coming soon</text></svg>`);
+    const pickImage=(r,kind='card')=>{
+      const direct=(kind==='detail'&&r.detail_image_url)||r.primary_image_url||r.image_url;
+      return direct || 'data:image/svg+xml;utf8,'+encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400">
+           <rect width="100%" height="100%" fill="#f4f6f8"/>
+           <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+             font-family="system-ui,Segoe UI,Arial" font-size="22">Image coming soon</text>
+         </svg>`);
     };
 
     const state = { rows:[], byId:new Map(), compare:new Set(), filterLabel:'All' };
@@ -509,11 +523,11 @@
               <h4 style="margin-bottom:8px">Recommendation Ladder</h4>
               <div class="row" style="margin-bottom:6px">
                 <span class="chip">Baseline</span>
-                <b>${base.name}</b> — <span class="pill price" style="padding:4px 10px">${AED(base.price)}</span>
+                <b>${base.name}</b> — <span class="pill price" style="padding:4px 8px">${AED(base.price)}</span>
               </div>
               <div class="row" style="margin-bottom:6px">
                 <span class="chip">Jump to</span>
-                <b>${better.name}</b> — <span class="pill price" style="padding:4px 10px">${AED(better.price)}</span>
+                <b>${better.name}</b> — <span class="pill price" style="padding:4px 8px">${AED(better.price)}</span>
                 <span class="chip" style="background:#143a42;border:1px solid #1a4f59">+${fmt.format(diff)} (${pct}%)</span>
               </div>
               <div class="muted">Why: ${why}.</div>
@@ -535,14 +549,12 @@
       document.getElementById('cmpCount').textContent = state.compare.size;
     }
     document.getElementById('compareFab').addEventListener('click', ()=>openCompare());
-    const wireHeader=()=>{ $('#btnCompare').onclick=()=>openCompare(); $('#btnWizard').onclick=()=>$('#wizard').showModal(); };
 
-    /* ==== INLINE DIRHAM ICON (double-bar “D”, no square) ==== */
-    const AED_ICON_SVG =
-      `<svg class="aed-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 18" aria-hidden="true" focusable="false">
-        <!-- Stylized Dirham glyph; inherits pill text color via currentColor -->
-        <path fill="currentColor" d="M3 2.5a1 1 0 0 1 1-1h6.2c4.3 0 6.8 2.6 6.9 6.0h2.1c.6 0 1 .4 1 1v.8c0 .6-.4 1-1 1h-2.1c-.4 3.9-3 6.7-6.9 6.7H4a1 1 0 0 1-1-1V10H2.2a1 1 0 0 1-1-1v-.8a1 1 0 0 1 1-1H3V2.5Zm2 0V7h6.2c-.5-3-2.3-4.5-5-4.5H5Zm11 6.5H5V8h11v1zm-4.8 6c2.7 0 4.6-1.6 5-4H5v4h6.2z"/>
-      </svg>`;
+    /* header */
+    function wireHeader(){
+      $('#btnCompare').onclick=()=>openCompare();
+      $('#btnWizard').onclick=()=>$('#wizard').showModal();
+    }
 
     /* boot */
     window.addEventListener('DOMContentLoaded', async ()=>{
@@ -550,7 +562,5 @@
       await load();
     });
   </script>
-
-  <!-- No extension-only scripts included -->
 </body>
 </html>
