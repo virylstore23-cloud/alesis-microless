@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Alesis Sold By Microless</title>
 
-<!-- Preload the AED icon (served from /aed.svg) -->
-
 <style>
   :root{
     --bg:#000000;
@@ -15,8 +13,8 @@
     --glass-brd:rgba(55,137,153,.35);
     --chip:#0d2e35;
     --chip-brd:#12434d;
-    --pill:#ffd400;      /* yellow pill */
-    --pill-text:#231a00; /* dark text on yellow */
+    --pill:#79e4ea;      /* turquoise pill like your screenshot */
+    --pill-text:#062e33; /* dark teal text on turquoise */
     --text:#e9f7ff;
     --muted:#a7bdc5;
     --line:rgba(86,150,160,.35);
@@ -29,8 +27,6 @@
     background:#000;
     font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif;
     -webkit-font-smoothing:antialiased;
-
-    /* Enhanced yellow glow sweeping from the top-left across the page */
     background-image:
       radial-gradient(1200px 900px at 0% 0%, rgba(255,215,0,0.22) 0%, rgba(255,200,0,0.12) 30%, transparent 70%),
       radial-gradient(1400px 900px at 55% 20%, rgba(255,170,0,0.10) 0%, transparent 60%),
@@ -38,25 +34,6 @@
     background-repeat:no-repeat;
     background-attachment:fixed;
     overflow-x:hidden;
-  }
-  body::before{
-    content:"";
-    position:fixed;
-    inset:-25% -20% -20% -25%;
-    pointer-events:none;
-    z-index:-1;
-    background:
-      radial-gradient(1600px 1200px at 0% 0%,
-        rgba(255,215,0,0.18) 0%,
-        rgba(255,190,0,0.10) 28%,
-        rgba(0,0,0,0) 72%),
-      conic-gradient(from 0.25turn at 0% 0%,
-        rgba(255,190,0,0.10) 0%,
-        rgba(0,0,0,0) 35%,
-        rgba(255,160,0,0.08) 55%,
-        rgba(0,0,0,0) 85%);
-    mix-blend-mode:screen;
-    will-change:transform,opacity;
   }
 
   .wrap{max-width:1160px; margin:28px auto; padding:0 16px}
@@ -72,7 +49,6 @@
   .btn:hover{border-color:#3adcf0}
   .btn-primary{background:#ff2b2b; border-color:#ff2b2b}
   .btn-ghost{background:transparent}
-
   .sold-by{ color:#ffd400; font-weight:900; letter-spacing:.2px }
 
   /* filter chips */
@@ -90,28 +66,28 @@
     border-radius:999px; padding:6px 12px; box-shadow:0 10px 24px rgba(0,0,0,.35); font-size:12px}
   .content{display:flex; flex-direction:column; gap:8px; padding:12px 12px 14px; min-height:176px}
   .title{font-weight:800; margin-top:4px}
+
+  /* price pill */
   .pill{display:inline-flex; align-items:center; gap:8px;
     background:var(--pill); color:var(--pill-text); border-radius:9999px; padding:8px 12px; font-weight:800; line-height:1}
   .pill.price{max-width:fit-content; width:auto; font-size:15px}
+  .pill .amt{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 
-  /* AED icon — use MASK directly from /aed.svg */
+  /* CLEAN DIRHAM ICON (no box, no mask; single inline SVG) */
   .aed-icon{
-    width:16px; height:16px; display:inline-block;
-    background: var(--pill-text);                  /* icon color */
-    -webkit-mask: none;
-    mask: none;
+    width:16px; height:16px; display:inline-block; vertical-align:-2px;
+    color: var(--pill-text);
   }
 
   .muted{color:var(--muted)}
   .tagrow{display:flex; gap:6px; flex-wrap:wrap}
   .tagrow .chip{background:#082b33;border-color:#11424a}
 
-  /* align Add to compare bottom-right */
   .foot{margin-top:auto; display:flex; justify-content:flex-end; align-items:center}
   .foot label{display:flex; align-items:center; gap:8px; color:#a7bdc5; user-select:none}
   .foot input{transform:translateY(1px)}
 
-  /* detail modal */
+  /* dialogs etc. (unchanged) */
   dialog{border:1px solid var(--glass-brd); border-radius:18px; padding:0; background:rgba(10,14,18,.92);
     color:var(--text); width:min(1000px,96vw)}
   dialog::backdrop{background:rgba(0,0,0,.6)}
@@ -119,19 +95,8 @@
   .left{background:var(--panel); border:1px solid var(--glass-brd); border-radius:16px; padding:12px}
   .left .imgwrap{background:#fff; border-radius:12px; overflow:hidden; height:min(58vh,520px)}
   .left .imgwrap img{width:100%; height:100%; object-fit:contain; display:block}
-
-  /* Prevent chip overflow (e.g., “Play this kit…”) */
-  .right .chiprow{
-    display:flex; gap:8px; align-items:center; margin-bottom:10px;
-    flex-wrap:wrap;
-  }
-  .right .chiprow .chip,
-  #ddemo{
-    max-width:100%;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
+  .right .chiprow{display:flex; gap:8px; align-items:center; margin-bottom:10px; flex-wrap:wrap}
+  #ddemo{ max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
   .chip.price{background:#0b3f45; border:1px solid #125056}
   .chip.upc{background:#052d33; border:1px solid #0f4950}
@@ -141,7 +106,6 @@
   .section li::marker{color:#26e3ff}
   .xbtn{position:absolute; top:8px; right:8px; background:transparent; border:1px solid var(--glass-brd); color:#fff; border-radius:10px; padding:6px 10px; cursor:pointer}
 
-  /* compare */
   #cmp{width:min(1100px,96vw)}
   #cmp .cols{display:grid; grid-auto-flow:column; grid-auto-columns:minmax(300px,1fr); gap:14px; padding:12px; overflow-x:auto; -webkit-overflow-scrolling:touch}
   #cmp .col{background:var(--glass); border:1px solid var(--glass-brd); border-radius:14px; overflow:hidden}
@@ -152,7 +116,6 @@
   #ladder{border-top:1px solid var(--glass-brd); margin:4px 12px 14px; padding-top:10px}
   #ladder .row{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
 
-  /* FAB for compare on scroll */
   #compareFab{
     position:fixed; right:16px; bottom:16px; z-index:60; display:none; align-items:center; gap:8px;
     padding:10px 14px; border-radius:999px; background:#ff2b2b; color:#fff; border:1px solid #ff2b2b; cursor:pointer
@@ -184,7 +147,6 @@
     <div id="grid"></div>
   </div>
 
-  <!-- Compare FAB -->
   <button id="compareFab"><span>Compare</span><span id="fabCount" class="bubble">0</span></button>
 
   <!-- Detail modal -->
@@ -202,29 +164,12 @@
         </div>
         <div id="dname" style="font-weight:900; font-size:18px; margin:2px 0 8px"></div>
 
-        <div class="section">
-          <h4>Description</h4>
-          <div id="ddesc" class="muted">—</div>
-        </div>
-        <div class="section">
-          <h4>Key Features</h4>
-          <ul id="dfeat"></ul>
-        </div>
-        <div class="section">
-          <h4>What's Included</h4>
-          <ul id="dinc"></ul>
-        </div>
-        <div class="section" id="dni" style="display:none">
-          <h4>What's NOT Included</h4>
-          <ul id="dnot"></ul>
-        </div>
-        <div class="section">
-          <h4>Quick Specs</h4>
-          <table class="specs" id="dspec"></table>
-        </div>
-        <div style="margin-top:10px">
-          <button class="btn btn-ghost" data-close>Close</button>
-        </div>
+        <div class="section"><h4>Description</h4><div id="ddesc" class="muted">—</div></div>
+        <div class="section"><h4>Key Features</h4><ul id="dfeat"></ul></div>
+        <div class="section"><h4>What's Included</h4><ul id="dinc"></ul></div>
+        <div class="section" id="dni" style="display:none"><h4>What's NOT Included</h4><ul id="dnot"></ul></div>
+        <div class="section"><h4>Quick Specs</h4><table class="specs" id="dspec"></table></div>
+        <div style="margin-top:10px"><button class="btn btn-ghost" data-close>Close</button></div>
       </div>
     </div>
   </dialog>
@@ -292,53 +237,36 @@
     const $ = (s,el=document)=>el.querySelector(s);
     const $$ = (s,el=document)=>Array.from(el.querySelectorAll(s));
     const fmt = new Intl.NumberFormat('en-AE',{style:'decimal',minimumFractionDigits:2,maximumFractionDigits:2});
-    const AED = v => (v==null||v==='') ? '—' : `<span class="aed-icon" aria-hidden="true"></span><span class="amt">${fmt.format(+v)}</span>`;
-    function getUPC(r){ return r.upc_code || r.upc || r.ean || r.barcode || null; }
-    function pickImage(r,kind='card'){
-      const direct = (kind==='detail' && (r.detail_image_url)) || r.primary_image_url || r.image_url;
-      return direct || 'data:image/svg+xml;utf8,'+encodeURIComponent(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400">
-          <rect width="100%" height="100%" fill="#f4f6f8"/>
-          <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
-            font-family="system-ui,Segoe UI,Arial" font-size="22">Image coming soon</text>
-        </svg>`
-      );
-    }
-    function deriveCategory(r){
+    const AED = v => (v==null||v==='') ? '—' : AED_ICON_SVG + `<span class="amt">${fmt.format(+v)}</span>`;
+    const getUPC = r => r.upc_code || r.upc || r.ean || r.barcode || null;
+    const toArray = val=>{
+      if (Array.isArray(val)) return val;
+      if (val == null || val === false) return [];
+      if (typeof val === 'string'){
+        try { const j = JSON.parse(val); if (Array.isArray(j)) return j; } catch {}
+        return val.split(/\r?\n|,|•|-\s|\u2022/g).map(s=>s.trim()).filter(Boolean);
+      }
+      return [];
+    };
+    const getNotIncluded = r=>{
+      const s = r.specs?.not_included || r.specs?.notIncluded || r.specs?.data?.not_included || r.specs?.data?.notIncluded;
+      return Array.from(new Set(toArray(s)));
+    };
+    const deriveCategory = r=>{
       if (r.category) return r.category;
       const s=(r.slug||'')+' '+(r.name||'');
       if (/\bamp\b|amplif|monitor/i.test(s)) return 'Drum Amplification';
       if (/samplepad|strike multipad|sr-?1?8|drum machine/i.test(s)) return 'Multipads & Drum Machines';
       if (/headphone|clamp|expansion|pack|accessor/i.test(s)) return 'Accessories';
       return 'Drum Kits';
-    }
-
-    /* ---- NOT INCLUDED robust helpers ---- */
-    function toArray(val){
-      if (Array.isArray(val)) return val;
-      if (val == null || val === false) return [];
-      if (typeof val === 'string'){
-        try { const j = JSON.parse(val); if (Array.isArray(j)) return j; } catch {}
-        return val
-          .split(/\r?\n|,|•|-\s|\u2022/g)
-          .map(s => s.trim())
-          .filter(Boolean);
-      }
-      return [];
-    }
-    function getNotIncluded(r){
-      const fromSpecs =
-        (r.specs?.not_included) ||
-        (r.specs?.notIncluded) ||
-        (r.specs?.data?.not_included) ||
-        (r.specs?.data?.notIncluded);
-      const merged = toArray(fromSpecs);
-      return Array.from(new Set(merged)); // de-dupe
-    }
+    };
+    const pickImage = (r,kind='card')=>{
+      const direct = (kind==='detail' && r.detail_image_url) || r.primary_image_url || r.image_url;
+      return direct || 'data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400"><rect width="100%" height="100%" fill="#f4f6f8"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui,Segoe UI,Arial" font-size="22">Image coming soon</text></svg>`);
+    };
 
     const state = { rows:[], byId:new Map(), compare:new Set(), filterLabel:'All' };
 
-    /* ===== fetch data ===== */
     async function load(){
       const url = `${window.ENV.SUPABASE_URL}/rest/v1/drum_kits?select=`+
         [
@@ -353,12 +281,10 @@
         const res = await fetch(url,{headers});
         if(!res.ok){
           const text = await res.text();
-          console.error('Load failed', res.status, text);
-          $('#grid').innerHTML = `<div class="muted">Can't load data (HTTP ${res.status}). Check ENV, table/columns, and RLS.<br><br>${text.replace(/</g,'&lt;')}</div>`;
+          $('#grid').innerHTML = `<div class="muted">Can't load data (HTTP ${res.status}).<br>${text.replace(/</g,'&lt;')}</div>`;
           return;
         }
         const rows = await res.json();
-        if(!Array.isArray(rows)){ $('#grid').innerHTML = '<div class="muted">Unexpected response.</div>'; return; }
         rows.forEach(r=>r._cat = deriveCategory(r));
         state.rows = rows;
         state.byId = new Map(rows.map(r=>[String(r.id),r]));
@@ -366,17 +292,14 @@
         render();
         updateFab();
       }catch(err){
-        console.error(err);
         $('#grid').innerHTML = `<div class="muted">Network error. Check console.</div>`;
       }
     }
 
-    /* ===== UI render ===== */
     function wireChips(){
       const labels = ['All','Electronic Drum Kits','Multipads & Drum Machines','Drum Amplification','Accessories','On Demo'];
-      const chips = labels.map(l=>`<div class="chip${state.filterLabel===l?' active':''}" data-filter="${l}">${l}</div>`).join('');
-      const box = $('#chips'); box.innerHTML = chips;
-      box.addEventListener('click',e=>{
+      $('#chips').innerHTML = labels.map(l=>`<div class="chip${state.filterLabel===l?' active':''}" data-filter="${l}">${l}</div>`).join('');
+      $('#chips').addEventListener('click',e=>{
         const b = e.target.closest('.chip'); if(!b) return;
         $$('#chips .chip').forEach(x=>x.classList.remove('active'));
         b.classList.add('active');
@@ -384,14 +307,13 @@
         render();
       });
     }
-
-    function fitsFilter(r){
+    const fitsFilter = r=>{
       const c = state.filterLabel;
       if (c==='All') return true;
       if (c==='On Demo') return !!r.on_demo;
       if (c==='Electronic Drum Kits') return deriveCategory(r)==='Drum Kits';
       return deriveCategory(r)===c;
-    }
+    };
 
     function render(){
       $('#cmpCount').textContent = state.compare.size;
@@ -413,9 +335,7 @@
               <div class="pill price">${AED(r.price)}</div>
               <div class="title">${r.name||''}</div>
               ${upc?`<div class="muted" style="margin-bottom:2px">UPC: ${upc}</div>`:''}
-              <div class="tagrow">
-                ${pills.map(p=>`<span class="chip">${p}</span>`).join('')}
-              </div>
+              <div class="tagrow">${pills.map(p=>`<span class="chip">${p}</span>`).join('')}</div>
               <div class="foot">
                 <label><input type="checkbox" data-compare ${state.compare.has(String(r.id))?'checked':''}> Add to compare</label>
               </div>
@@ -423,7 +343,6 @@
           </div>`;
       }).join('');
 
-      // wiring
       $$('#grid .card').forEach(card=>{
         const id = String(card.dataset.id);
         card.addEventListener('click', (e)=>{
@@ -438,7 +357,6 @@
       });
     }
 
-    /* ===== Detail modal ===== */
     function asList(node, arr){
       node.innerHTML = '';
       if (!Array.isArray(arr) || !arr.length){ node.innerHTML = '<li>—</li>'; return; }
@@ -459,7 +377,6 @@
     function buildQuick(r){
       const quickArr = (r.specs && Array.isArray(r.specs.quick)) ? r.specs.quick : null;
       if (quickArr && quickArr.length) return quickArr;
-
       const cat = deriveCategory(r);
       if (cat==='Drum Amplification'){
         return [
@@ -497,7 +414,6 @@
 
     function openDetail(id){
       const r = state.byId.get(String(id)); if(!r) return;
-
       $('#dimg').src = pickImage(r,'detail');
       $('#dname').textContent = r.name || '';
       $('#dprice').innerHTML = AED(r.price);
@@ -534,18 +450,15 @@
 
       const dlg = $('#detail');
       dlg.showModal();
-
-      const closeFn = ()=>dlg.close();
-      dlg.addEventListener('click', e=>{ if (e.target.closest('[data-close]')) closeFn(); });
-      dlg.addEventListener('keydown', e=>{ if (e.key === 'Escape') closeFn(); }, {once:true});
+      dlg.addEventListener('click', e=>{ if (e.target.closest('[data-close]')) dlg.close(); });
       dlg.addEventListener('click', e=>{
         const sheet = dlg.querySelector('.sheet');
         const rct = sheet.getBoundingClientRect();
-        if (e.clientX<rct.left||e.clientX>rct.right||e.clientY<rct.top||e.clientY>rct.bottom) closeFn();
+        if (e.clientX<rct.left||e.clientX>rct.right||e.clientY<rct.top||e.clientY>rct.bottom) dlg.close();
       }, {once:true});
     }
 
-    /* ===== Compare ===== */
+    /* Compare */
     function openCompare(){
       const ids = Array.from(state.compare);
       const rows = ids.map(id=>state.byId.get(String(id))).filter(Boolean);
@@ -559,9 +472,7 @@
               <div class="pad">
                 <div class="pill price" style="margin-bottom:6px">${AED(r.price)}</div>
                 <div class="title" style="margin:0 0 8px">${r.name||''}</div>
-                <table class="specs">
-                  ${q.map(it=>specRow(it.label || it.key || '', qVal(it,r))).join('')}
-                </table>
+                <table class="specs">${q.map(it=>specRow(it.label || it.key || '', qVal(it,r))).join('')}</table>
                 <div style="display:flex; gap:8px; margin-top:10px">
                   <button class="btn btn-ghost" data-open>Open</button>
                   <button class="btn btn-ghost" data-remove>Remove</button>
@@ -593,7 +504,6 @@
           if ((better.bluetooth_audio||0) && !base.bluetooth_audio) hints.push('Bluetooth audio');
           if ((better.usb_midi||0) && !base.usb_midi) hints.push('USB/MIDI');
           const why = hints.length ? hints.join(', ') : 'overall higher spec';
-
           ladder.innerHTML = `
             <div class="section">
               <h4 style="margin-bottom:8px">Recommendation Ladder</h4>
@@ -612,45 +522,11 @@
           ladder.innerHTML = '';
         }
       }
-
       const dlg = $('#cmp');
       dlg.showModal();
       dlg.addEventListener('click', e=>{ if (e.target.closest('[data-close]')) dlg.close(); });
     }
 
-    /* ===== Wizard ==== */
-    function openWizard(){
-      const dlg = $('#wizard');
-      const out = $('#wizOut');
-      out.textContent = '';
-      dlg.showModal();
-      dlg.addEventListener('click', e=>{ if (e.target.closest('[data-close]')) dlg.close(); });
-      $('#wGo').onclick=()=>{
-        const [lo,hi] = $('#wBud').value.split('-').map(Number);
-        const conn = $('#wConn').value;
-        const choices = state.rows.filter(r=>{
-          const p = +r.price || 0;
-          if (p<lo || p>hi) return false;
-          if (conn==='USB/MIDI' && !r.usb_midi) return false;
-          if (conn==='Bluetooth' && !r.bluetooth_audio) return false;
-          return deriveCategory(r)==='Drum Kits';
-        }).sort((a,b)=>(+a.price)-(+b.price));
-
-        if (!choices.length){ out.innerHTML = '<div class="muted">No kit matches your preferences.</div>'; return; }
-        const top = choices[Math.min(1, choices.length-1)];
-        const msg = `Because it matches your budget, ${conn==='No preference'?'your needs':'your connectivity preference'}, and offers ${top.mesh?'mesh heads':'a solid starter spec'}.`;
-        out.innerHTML = `
-          <div class="section">
-            <div style="font-weight:900; color:#9ff8ff">Your Match</div>
-            <div style="margin:6px 0"><b>${top.name}</b> looks like a great fit at <span class="pill price" style="padding:4px 10px">${AED(top.price)}</span>.</div>
-            <div class="muted">${msg}</div>
-            <div style="margin-top:10px"><button class="btn btn-primary" id="wizOpen">View This Kit</button></div>
-          </div>`;
-        $('#wizOpen').onclick=()=>{ dlg.close(); openDetail(top.id); };
-      };
-    }
-
-    /* ===== Compare FAB ===== */
     function updateFab(){
       const show = state.compare.size>0;
       const el = document.getElementById('compareFab');
@@ -659,52 +535,22 @@
       document.getElementById('cmpCount').textContent = state.compare.size;
     }
     document.getElementById('compareFab').addEventListener('click', ()=>openCompare());
+    const wireHeader=()=>{ $('#btnCompare').onclick=()=>openCompare(); $('#btnWizard').onclick=()=>$('#wizard').showModal(); };
 
-    /* ===== header buttons ===== */
-    function wireHeader(){
-      $('#btnCompare').onclick=()=>openCompare();
-      $('#btnWizard').onclick=()=>openWizard();
-    }
+    /* ==== INLINE DIRHAM ICON (double-bar “D”, no square) ==== */
+    const AED_ICON_SVG =
+      `<svg class="aed-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 18" aria-hidden="true" focusable="false">
+        <!-- Stylized Dirham glyph; inherits pill text color via currentColor -->
+        <path fill="currentColor" d="M3 2.5a1 1 0 0 1 1-1h6.2c4.3 0 6.8 2.6 6.9 6.0h2.1c.6 0 1 .4 1 1v.8c0 .6-.4 1-1 1h-2.1c-.4 3.9-3 6.7-6.9 6.7H4a1 1 0 0 1-1-1V10H2.2a1 1 0 0 1-1-1v-.8a1 1 0 0 1 1-1H3V2.5Zm2 0V7h6.2c-.5-3-2.3-4.5-5-4.5H5Zm11 6.5H5V8h11v1zm-4.8 6c2.7 0 4.6-1.6 5-4H5v4h6.2z"/>
+      </svg>`;
 
-    /* ===== boot ===== */
+    /* boot */
     window.addEventListener('DOMContentLoaded', async ()=>{
       wireHeader();
       await load();
     });
   </script>
 
-  <!-- === AED ICON + PILL FIX OVERRIDES (injected) === -->
-  <style>
-    /* Inline AED SVG icon: no mask/path; inherits color from pill text */
-    .aed-icon{
-      width:16px; height:16px; display:inline-block;
-      vertical-align:-2px;
-      color: var(--pill-text);
-    }
-    /* Prevent long demo labels from overflowing in the details header */
-    .right .chiprow{ display:flex; gap:8px; align-items:center; margin-bottom:10px; flex-wrap:wrap; }
-    #ddemo{ max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  </style>
-
-  <script>
-    (function(){
-      window.fmt = window.fmt || new Intl.NumberFormat('en-AE',{style:'decimal',minimumFractionDigits:2,maximumFractionDigits:2});
-      // Inline AED SVG (your path), colored via currentColor to match pill text
-      window.AED_ICON_SVG = `
-        <svg class="aed-icon" xmlns="http://www.w3.org/2000/svg"
-             viewBox="0 0 344.84 299.91" width="16" height="16" aria-hidden="true" focusable="false">
-          <path d="M342.14,140.96l2.7,2.54v-7.72c0-17-11.92-30.84-26.56-30.84h-23.41C278.49,36.7,222.69,0,139.68,0c-52.86,0-59.65,0-109.71,0,0,0,15.03,12.63,15.03,52.4v52.58h-27.68c-5.38,0-10.43-2.08-14.61-6.01l-2.7-2.54v7.72c0,17.01,11.92,30.84,26.56,30.84h18.44s0,29.99,0,29.99h-27.68c-5.38,0-10.43-2.07-14.61-6.01l-2.7-2.54v7.71c0,17,11.92,30.82,26.56,30.82h18.44s0,54.89,0,54.89c0,38.65-15.03,50.06-15.03,50.06h109.71c85.62,0,139.64-36.96,155.38-104.98h32.46c5.38,0,10.43,2.07,14.61,6l2.7,2.54v-7.71c0-17-11.92-30.83-26.56-30.83h-18.9c.32-4.88.49-9.87.49-15s-.18-10.11-.51-14.99h28.17c5.37,0,10.43,2.07,14.61,6.01ZM89.96,15.01h45.86c61.7,0,97.44,27.33,108.1,89.94l-153.96.02V15.01ZM136.21,284.93h-46.26v-89.98l153.87-.02c-9.97,56.66-42.07,88.38-107.61,90ZM247.34,149.96c0,5.13-.11,10.13-.34,14.99l-157.04.02v-29.99l157.05-.02c.22,4.84.33,9.83.33,15Z"
-                fill="currentColor"/>
-        </svg>`;
-
-      // Override AED() to use the inline SVG (no external mask path)
-      window.AED = function(v){
-        if (v==null || v==='') return '—';
-        return window.AED_ICON_SVG + '<span class="amt">' + window.fmt.format(+v) + '</span>';
-      };
-    })();
-  </script>
-  <!-- === /AED ICON + PILL FIX OVERRIDES === -->
-
+  <!-- No extension-only scripts included -->
 </body>
 </html>
