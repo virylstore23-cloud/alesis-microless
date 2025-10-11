@@ -13,30 +13,23 @@
     --glass-brd:rgba(55,137,153,.35);
     --chip:#0d2e35;
     --chip-brd:#12434d;
-    --pill:#ffd400;      /* yellow price pill */
-    --pill-text:#231a00; /* dark text on yellow */
+    --pill:#ffd400;
+    --pill-text:#231a00;
     --text:#e9f7ff;
     --muted:#a7bdc5;
     --line:rgba(86,150,160,.35);
   }
-
   html,body{height:100%}
   body{
-    margin:0;
-    color:var(--text);
-    background:#000;
+    margin:0;color:var(--text);background:#000;
     font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif;
     -webkit-font-smoothing:antialiased;
     background-image:
       radial-gradient(1200px 900px at 0% 0%, rgba(255,215,0,0.22) 0%, rgba(255,200,0,0.12) 30%, transparent 70%),
       linear-gradient(180deg, #000 0%, #0a0a0a 60%, #000 100%);
-    background-attachment:fixed;
-    overflow-x:hidden;
+    background-attachment:fixed; overflow-x:hidden;
   }
-
   .wrap{max-width:1160px; margin:28px auto; padding:0 16px}
-
-  /* header */
   .bar{display:flex; align-items:center; gap:10px; margin-bottom:18px}
   .crumbs{font-weight:700; letter-spacing:.3px}
   .crumbs .tag{display:inline-block; padding:3px 8px; border-radius:999px; margin-left:6px;
@@ -49,13 +42,11 @@
   .btn-ghost{background:transparent}
   .sold-by{ color:#ffd400; font-weight:900; letter-spacing:.2px }
 
-  /* filter chips */
   #chips{display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 10px}
   .chip{border:1px solid var(--glass-brd); background:var(--panel); color:#cdeef2;
     padding:8px 12px; border-radius:999px; cursor:pointer; user-select:none}
   .chip.active{background:#0b2c34; border-color:#1db8c4}
 
-  /* grid cards */
   #grid{display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
   .card{display:flex; flex-direction:column; background:var(--glass); border:1px solid var(--glass-brd); border-radius:16px; overflow:hidden}
   .imgbox{position:relative; height:200px; background:#0b0e12; cursor:pointer}
@@ -65,7 +56,6 @@
   .content{display:flex; flex-direction:column; gap:8px; padding:12px 12px 14px; min-height:176px}
   .title{font-weight:800; margin-top:4px}
 
-  /* SMALL price pill (applies everywhere) */
   .pill{
     display:inline-flex; align-items:center; gap:6px;
     background:var(--pill); color:var(--pill-text);
@@ -74,7 +64,6 @@
   .pill.price{max-width:fit-content; width:auto; font-size:13px}
   .pill .amt{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 
-  /* Dirham icon (inline, legal) */
   .aed-icon{ width:14px; height:14px; display:inline-block; vertical-align:-1px; color:var(--pill-text) }
 
   .muted{color:var(--muted)}
@@ -85,7 +74,6 @@
   .foot label{display:flex; align-items:center; gap:8px; color:#a7bdc5; user-select:none}
   .foot input{transform:translateY(1px)}
 
-  /* dialogs */
   dialog{border:1px solid var(--glass-brd); border-radius:18px; padding:0; background:rgba(10,14,18,.92);
     color:var(--text); width:min(1100px,96vw)}
   dialog::backdrop{background:rgba(0,0,0,.6)}
@@ -95,7 +83,6 @@
   .left .imgwrap img{width:100%; height:100%; object-fit:contain; display:block}
   .right .chiprow{display:flex; gap:8px; align-items:center; margin-bottom:10px; flex-wrap:wrap}
   #ddemo{ max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-
   .chip.price{background:#0b3f45; border:1px solid #125056}
   .chip.upc{background:#052d33; border:1px solid #0f4950}
   .section{border:1px solid var(--glass-brd); border-radius:12px; padding:12px; margin-top:12px; background:rgba(7,12,16,.66)}
@@ -104,7 +91,6 @@
   .section li::marker{color:#26e3ff}
   .xbtn{position:absolute; top:8px; right:8px; background:transparent; border:1px solid var(--glass-brd); color:#fff; border-radius:10px; padding:6px 10px; cursor:pointer}
 
-  /* compare */
   #cmp .cols{display:grid; grid-auto-flow:column; grid-auto-columns:minmax(300px,1fr); gap:14px; padding:12px; overflow-x:auto; -webkit-overflow-scrolling:touch}
   #cmp .col{background:var(--glass); border:1px solid var(--glass-brd); border-radius:14px; overflow:hidden}
   #cmp .col .pad{padding:12px}
@@ -114,7 +100,6 @@
   #ladder{border-top:1px solid var(--glass-brd); margin:4px 12px 14px; padding-top:10px}
   #ladder .row{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
 
-  /* Compare FAB */
   #compareFab{
     position:fixed; right:16px; bottom:16px; z-index:60; display:none; align-items:center; gap:8px;
     padding:10px 14px; border-radius:999px; background:#ff2b2b; color:#fff; border:1px solid #ff2b2b; cursor:pointer
@@ -129,7 +114,7 @@
 </head>
 
 <body>
-  <!-- Inline Dirham icon symbol (legal/local) -->
+  <!-- Inline Dirham icon symbol -->
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
     <symbol id="aed-dirham" viewBox="0 0 344.84 299.91">
       <path fill="currentColor" d="M342.14,140.96l2.7,2.54v-7.72c0-17-11.92-30.84-26.56-30.84h-23.41C278.49,36.7,222.69,0,139.68,0c-52.86,0-59.65,0-109.71,0,0,0,15.03,12.63,15.03,52.4v52.58h-27.68c-5.38,0-10.43-2.08-14.61-6.01l-2.7-2.54v7.72c0,17.01,11.92,30.84,26.56,30.84h18.44s0,29.99,0,29.99h-27.68c-5.38,0-10.43-2.07-14.61-6.01l-2.7-2.54v7.71c0,17,11.92,30.82,26.56,30.82h18.44s0,54.89,0,54.89c0,38.65-15.03,50.06-15.03,50.06h109.71c85.62,0,139.64-36.96,155.38-104.98h32.46c5.38,0,10.43,2.07,14.61,6l2.7,2.54v-7.71c0-17-11.92-30.83-26.56-30.83h-18.9c.32-4.88.49-9.87.49-15s-.18-10.11-.51-14.99h28.17c5.37,0,10.43,2.07,14.61,6.01ZM89.96,15.01h45.86c61.7,0,97.44,27.33,108.1,89.94l-153.96.02V15.01ZM136.21,284.93h-46.26v-89.98l153.87-.02c-9.97,56.66-42.07,88.38-107.61,90ZM247.34,149.96c0,5.13-.11,10.13-.34,14.99l-157.04.02v-29.99l157.05-.02c.22,4.84.33,9.83.33,15Z"/>
@@ -153,24 +138,22 @@
     <div id="grid"></div>
   </div>
 
-  <!-- Compare FAB -->
   <button id="compareFab"><span>Compare</span><span id="fabCount" class="bubble">0</span></button>
 
-  <!-- Detail modal -->
   <dialog id="detail">
     <button class="xbtn" data-close>Close</button>
     <div class="sheet">
-      <div class="left">
-        <div class="imgwrap"><img id="dimg" alt=""></div>
-      </div>
+      <div class="left"><div class="imgwrap"><img id="dimg" alt=""></div></div>
       <div class="right">
         <div class="chiprow">
-          <span id="dprice" class="pill price"><svg class="aed-icon" viewBox="0 0 344.84 299.91"><use href="#aed-dirham"></use></svg><span class="amt">—</span></span>
+          <span id="dprice" class="pill price">
+            <svg class="aed-icon" viewBox="0 0 344.84 299.91"><use href="#aed-dirham"></use></svg>
+            <span class="amt">—</span>
+          </span>
           <span id="dupc" class="chip upc" style="display:none"></span>
           <span id="ddemo" class="chip" style="display:none;background:#ffd400;color:#231a00;font-weight:800" title=""></span>
         </div>
         <div id="dname" style="font-weight:900; font-size:18px; margin:2px 0 8px"></div>
-
         <div class="section"><h4>Description</h4><div id="ddesc" class="muted">—</div></div>
         <div class="section"><h4>What's Included</h4><ul id="dinc"></ul></div>
         <div class="section"><h4>What's NOT Included</h4><ul id="dnot"></ul></div>
@@ -180,7 +163,6 @@
     </div>
   </dialog>
 
-  <!-- Compare modal -->
   <dialog id="cmp">
     <div class="bar" style="padding:10px 12px 0">
       <div style="font-weight:900">Compare</div>
@@ -191,7 +173,6 @@
     <div id="ladder"></div>
   </dialog>
 
-  <!-- Wizard -->
   <dialog id="wizard">
     <div class="bar" style="padding:10px 12px 0">
       <div style="font-weight:900">Find My Perfect Kit</div>
@@ -230,69 +211,31 @@
     </div>
   </dialog>
 
-  <!-- ENV -->
   <script>
+    // ===== ENV =====
     window.ENV = {
       SUPABASE_URL: "https://sagrlpgfdwmtzsijlyjk.supabase.co",
       SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhZ3JscGdmZHdtdHpzaWpseWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMDY2MzEsImV4cCI6MjA3NTY4MjYzMX0.yQR332GzntPAKKrElttuEIaec-xAjHlQdRNd4oagbvM"
     };
-  </script>
 
-  <script>
-    /* ===== helpers ===== */
+    // ===== helpers =====
     const $  = (s,el=document)=>el.querySelector(s);
     const $$ = (s,el=document)=>Array.from(el.querySelectorAll(s));
     const fmt = new Intl.NumberFormat('en-AE',{style:'decimal',minimumFractionDigits:2,maximumFractionDigits:2});
     const AED = v => (v==null||v==='') ? '—'
       : `<svg class="aed-icon" viewBox="0 0 344.84 299.91"><use href="#aed-dirham"></use></svg><span class="amt">${fmt.format(+v)}</span>`;
-
-    const tryJson = v=>{
-      if (v==null) return null;
-      if (typeof v==='object') return v;
-      if (typeof v==='string'){
-        try{ return JSON.parse(v); }catch{ return v; }
-      }
-      return v;
-    };
-
-    const getUPC = r => r.upc_code || r.upc || r.ean || r.barcode || null;
-
     const toArray = v=>{
-      v = tryJson(v);
       if (Array.isArray(v)) return v;
       if (v==null||v===false) return [];
       if (typeof v==='string'){
+        try{const j=JSON.parse(v); if(Array.isArray(j)) return j;}catch{}
         return v.split(/\r?\n|,|•|-\s|\u2022/g).map(s=>s.trim()).filter(Boolean);
       }
       return [];
     };
-
-    const get = (obj, path) => path.split('.').reduce((o,k)=> (o && o[k]!==undefined ? o[k] : undefined), obj);
-
-    // === Alias map so UI can read fields from either top-level or specs.data ===
-    const ALIASES = {
-      kits_user:   ['kits_user','specs.data.user_kits','specs.data.kits_user'],
-      kits_factory:['kits_factory','specs.data.preset_kits'],
-      sounds:      ['sounds','specs.data.sounds','specs.data.sounds_total'],
-      watt_peak:   ['watt_peak','specs.data.watt_peak'],
-      amp_watt_rms:['amp_watt_rms','specs.data.watt_rms'],
-      usb_midi:    ['usb_midi','specs.data.usb_midi'],
-      bluetooth_audio:['bluetooth_audio','specs.data.bluetooth_audio']
-    };
-    const readAliased = (r, key)=>{
-      const paths = ALIASES[key] || [key];
-      for (const p of paths){
-        const v = p.includes('.') ? get(r,p) : r[p];
-        if (v !== undefined && v !== null && v !== '') return v;
-      }
-      return undefined;
-    };
-
-    const getNotIncluded = r=>{
-      const s=r.specs?.not_included||r.specs?.notIncluded||r.specs?.data?.not_included||r.specs?.data?.notIncluded;
-      return Array.from(new Set(toArray(s)));
-    };
-
+    const getUPC = r => r.upc_code || r.upc || r.ean || r.barcode || null;
+    const getPath = (obj, path) => path.split('.').reduce((o,k)=> (o && o[k]!==undefined ? o[k] : undefined), obj);
+    const coalesce = (...vals) => vals.find(v => v!==undefined && v!==null && v!=='');
     const deriveCategory = r=>{
       if (r.category) return r.category;
       const s=(r.slug||'')+' '+(r.name||'');
@@ -301,7 +244,6 @@
       if (/headphone|clamp|expansion|pack|accessor/i.test(s)) return 'Accessories';
       return 'Drum Kits';
     };
-
     const pickImage=(r,kind='card')=>{
       const direct=(kind==='detail'&&r.detail_image_url)||r.primary_image_url||r.image_url;
       return direct || 'data:image/svg+xml;utf8,'+encodeURIComponent(
@@ -312,6 +254,103 @@
          </svg>`);
     };
 
+    // ===== alias map (supports both of your Supabase shapes) =====
+    const ALIASES = {
+      kits_user:    ['kits_user','user_kits','specs.data.user_kits'],
+      kits_factory: ['kits_factory','specs.data.preset_kits'],
+      sounds:       ['sounds','sounds_total','specs.data.sounds_total'],
+      watt_peak:    ['watt_peak','specs.data.watt_peak'],
+      amp_watt_rms: ['amp_watt_rms','specs.data.watt_rms'],
+    };
+    const readAliased = (r, key)=>{
+      const paths = ALIASES[key] || [key];
+      for (const p of paths){
+        const v = p.includes('.') ? getPath(r,p) : r[p];
+        if (v !== undefined && v !== null && v !== '') return v;
+      }
+      return undefined;
+    };
+
+    // ===== normalize data right after fetch =====
+    function normalizeRows(rows){
+      rows.forEach(r=>{
+        if (typeof r.specs === 'string') { try { r.specs = JSON.parse(r.specs); } catch { r.specs = {}; } }
+        if (!r.specs || typeof r.specs !== 'object') r.specs = {};
+        if (!r.specs.data || typeof r.specs.data !== 'object') r.specs.data = r.specs.data ?? {};
+
+        // unify and keep types (numbers become numbers; keep strings like "Unlimited")
+        const numish = v => {
+          if (v==null || v==='') return null;
+          if (typeof v === 'string' && v.trim().toLowerCase() === 'unlimited') return 'Unlimited';
+          const n = Number(v); return Number.isFinite(n) ? n : v;
+        };
+        r.kits_user    = numish(coalesce(r.kits_user, r.user_kits, r.specs.data.user_kits));
+        r.kits_factory = numish(coalesce(r.kits_factory, r.specs.data.preset_kits));
+        r.sounds       = numish(coalesce(r.sounds, r.sounds_total, r.specs.data.sounds_total));
+
+        r.features = toArray(r.features);
+        r.contents = toArray(r.contents);
+
+        if (Array.isArray(r.specs.quick)){
+          r.specs.quick = r.specs.quick.map(it => (it && typeof it==='object') ? it : {label:String(it), value:'—'});
+        } else {
+          r.specs.quick = r.specs.quick ?? [];
+        }
+      });
+    }
+
+    // ===== quick-spec rendering =====
+    function specRow(label, val){
+      let v = (val===true)?'Yes' : (val===false||val==null||val==='')?'—' : val;
+      return `<tr><td>${label}</td><td style="text-align:right">${v}</td></tr>`;
+    }
+    function qVal(it, r){
+      if (!it) return '—';
+      if (it.value!=null) return it.value;
+      if (!it.key) return '—';
+      const v = readAliased(r, it.key);
+      if (it.format==='yesno') return v ? 'Yes' : 'No';
+      return (v==null||v==='') ? '—' : v;
+    }
+    function buildQuick(r){
+      if (Array.isArray(r.specs?.quick) && r.specs.quick.length) return r.specs.quick;
+
+      const cat = deriveCategory(r);
+      if (cat==='Drum Amplification'){
+        return [
+          {label:'Category', value:'Drum Amplification'},
+          {label:'Power', value:`${qVal({key:'amp_watt_rms'}, r) || '—'} W RMS / ${qVal({key:'watt_peak'}, r) || '—'} W peak`},
+          {label:'Bluetooth', key:'bluetooth_audio', format:'yesno'},
+          {label:'Inputs', value:r.specs?.data?.inputs ?? '—'},
+          {label:'Outputs', value:r.specs?.data?.outputs ?? '—'}
+        ];
+      }
+      if (cat==='Multipads & Drum Machines'){
+        return [
+          {label:'Category', value:cat},
+          {label:'USB/MIDI', key:'usb_midi', format:'yesno'},
+          {label:'Bluetooth', key:'bluetooth_audio', format:'yesno'}
+        ];
+      }
+      if (cat==='Accessories'){
+        return [{label:'Category', value:'Accessories'}];
+      }
+      return [
+        {label:'Category', value:'Drum Kits'},
+        {label:'Mesh', key:'mesh', format:'yesno'},
+        {label:'USB/MIDI', key:'usb_midi', format:'yesno'},
+        {label:'Bluetooth', key:'bluetooth_audio', format:'yesno'},
+        {label:'Factory kits', key:'kits_factory'},
+        {label:'User kits', key:'kits_user'},
+        {label:'Sounds', key:'sounds'},
+        {label:'Toms', key:'toms_count'},
+        {label:'Crash cymbals', key:'crash_count'},
+        {label:'Ride zones', key:'ride_zones'},
+        {label:'Kick tower', key:'kick_tower', format:'yesno'}
+      ];
+    }
+
+    // ===== state & UI =====
     const state = { rows:[], byId:new Map(), compare:new Set(), filterLabel:'All' };
 
     async function load(){
@@ -319,7 +358,8 @@
         [
           'id,name,description,price,upc,upc_code,is_active,slug,category',
           'primary_image_url,detail_image_url,on_demo,on_demo_label',
-          'features,contents,specs,kits_factory,kits_user,sounds,mesh,usb_midi,bluetooth_audio',
+          // include possible columns you rely on
+          'features,contents,specs,kits_factory,kits_user,user_kits,sounds,sounds_total,mesh,usb_midi,bluetooth_audio',
           'toms_count,crash_count,ride_zones,kick_tower'
         ].join(',') + '&order=price.desc.nullslast';
 
@@ -332,35 +372,17 @@
           return;
         }
         const rows = await res.json();
-
-        // Normalize each row so quick specs work across all products
-        rows.forEach(r=>{
-          r._cat = deriveCategory(r);
-
-          // Parse specs (and nested data) if they're JSON strings
-          r.specs = tryJson(r.specs) || {};
-          if (typeof r.specs !== 'object') r.specs = {};
-          r.specs.data = tryJson(r.specs.data) || {};
-          if (typeof r.specs.data !== 'object') r.specs.data = {};
-
-          // Ensure specs.quick is an array (handles JSON string or single string)
-          if (r.specs.quick){
-            const q = tryJson(r.specs.quick);
-            r.specs.quick = Array.isArray(q) ? q : toArray(q).map(s=>({label:String(s), value:s}));
-          }
-
-          // Coerce list-ish fields
-          r.features = toArray(r.features);
-          r.contents = toArray(r.contents);
-        });
-
+        normalizeRows(rows);                       // <<< key step
+        rows.forEach(r=>r._cat = deriveCategory(r));
         state.rows = rows;
         state.byId = new Map(rows.map(r=>[String(r.id),r]));
         wireChips();
         render();
         updateFab();
+        // expose for console debugging
+        window.state = state;
+        window.buildQuick = buildQuick;
       }catch(err){
-        console.error(err);
         $('#grid').innerHTML = `<div class="muted">Network error. Check console.</div>`;
       }
     }
@@ -432,59 +454,6 @@
       if (!list.length){ node.innerHTML = '<li>—</li>'; return; }
       node.innerHTML = list.map(x=>`<li>${String(x)}</li>`).join('');
     }
-    function specRow(label, val){
-      let v = (val===true)?'Yes' : (val===false||val==null||val==='')?'—' : val;
-      return `<tr><td>${label}</td><td style="text-align:right">${v}</td></tr>`;
-    }
-
-    // === qVal now uses alias fallback and normalized specs ===
-    function qVal(it, r){
-      if (!it) return '—';
-      if (it.value!=null) return it.value;
-      if (!it.key) return '—';
-      const v = readAliased(r, it.key);
-      if (it.format==='yesno') return v ? 'Yes' : 'No';
-      return (v==null||v==='') ? '—' : v;
-    }
-
-    function buildQuick(r){
-      const quickArr = (r.specs && Array.isArray(r.specs.quick)) ? r.specs.quick : null;
-      if (quickArr && quickArr.length) return quickArr;
-
-      const cat = deriveCategory(r);
-      if (cat==='Drum Amplification'){
-        return [
-          {label:'Category', value:'Drum Amplification'},
-          {label:'Power', value:`${readAliased(r,'amp_watt_rms')??'—'} W RMS / ${readAliased(r,'watt_peak')??'—'} W peak`},
-          {label:'Bluetooth', key:'bluetooth_audio', format:'yesno'},
-          {label:'Inputs', value:r.specs?.data?.inputs || '—'},
-          {label:'Outputs', value:r.specs?.data?.outputs || '—'}
-        ];
-      }
-      if (cat==='Multipads & Drum Machines'){
-        return [
-          {label:'Category', value:cat},
-          {label:'USB/MIDI', key:'usb_midi', format:'yesno'},
-          {label:'Bluetooth', key:'bluetooth_audio', format:'yesno'}
-        ];
-      }
-      if (cat==='Accessories'){
-        return [{label:'Category', value:'Accessories'}];
-      }
-      return [
-        {label:'Category', value:'Drum Kits'},
-        {label:'Mesh', key:'mesh', format:'yesno'},
-        {label:'USB/MIDI', key:'usb_midi', format:'yesno'},
-        {label:'Bluetooth', key:'bluetooth_audio', format:'yesno'},
-        {label:'Factory kits', key:'kits_factory'},
-        {label:'User kits', key:'kits_user'},
-        {label:'Sounds', key:'sounds'},
-        {label:'Toms', key:'toms_count'},
-        {label:'Crash cymbals', key:'crash_count'},
-        {label:'Ride zones', key:'ride_zones'},
-        {label:'Kick tower', key:'kick_tower', format:'yesno'}
-      ];
-    }
 
     function openDetail(id){
       const r = state.byId.get(String(id)); if(!r) return;
@@ -502,14 +471,11 @@
         dlab.style.display='inline-block';
         dlab.textContent = label;
         dlab.title = label;
-      } else {
-        dlab.style.display='none';
-        dlab.title = '';
-      }
+      } else { dlab.style.display='none'; dlab.title = ''; }
 
       $('#ddesc').textContent = r.description || '—';
       asList($('#dinc'), r.contents);
-      asList($('#dnot'), getNotIncluded(r));
+      asList($('#dnot'), r.specs?.not_included || r.specs?.data?.not_included || []);
 
       const quick = buildQuick(r);
       $('#dspec').innerHTML = quick.map(it => specRow(it.label || it.key || '', qVal(it, r))).join('');
@@ -520,11 +486,10 @@
       dlg.addEventListener('click', e=>{
         const sheet = dlg.querySelector('.sheet');
         const rct = sheet.getBoundingClientRect();
-        if (e.clientX<rct.left||e.clientX>rct.right||e.clientY>rct.bottom||e.clientY<rct.top) dlg.close();
+        if (e.clientX<rct.left||e.clientX>rct.right||e.clientY<rct.top||e.clientY>rct.bottom) dlg.close();
       }, {once:true});
     }
 
-    /* Compare */
     function openCompare(){
       const ids = Array.from(state.compare);
       const rows = ids.map(id=>state.byId.get(String(id))).filter(Boolean);
@@ -564,9 +529,10 @@
           const diff = (+better.price)-(+base.price);
           const pct = base.price ? Math.round((diff/base.price)*100) : 0;
           const hints = [];
+          const v = (rr,k)=>{ const x=qVal({key:k},rr); const n=Number(x); return Number.isFinite(n)?n:x; };
           if ((better.mesh||0) && !base.mesh) hints.push('mesh heads');
-          if ((+readAliased(better,'kits_factory')||0) > (+readAliased(base,'kits_factory')||0)) hints.push('more factory kits');
-          if ((+readAliased(better,'sounds')||0) > (+readAliased(base,'sounds')||0)) hints.push('more sounds');
+          if ((v(better,'kits_factory')||0) > (v(base,'kits_factory')||0)) hints.push('more factory kits');
+          if ((v(better,'sounds')||0) > (v(base,'sounds')||0)) hints.push('more sounds');
           if ((better.bluetooth_audio||0) && !base.bluetooth_audio) hints.push('Bluetooth audio');
           if ((better.usb_midi||0) && !base.usb_midi) hints.push('USB/MIDI');
           const why = hints.length ? hints.join(', ') : 'overall higher spec';
@@ -601,14 +567,13 @@
       document.getElementById('cmpCount').textContent = state.compare.size;
     }
     document.getElementById('compareFab').addEventListener('click', ()=>openCompare());
-
-    /* header */
     function wireHeader(){
       $('#btnCompare').onclick=()=>openCompare();
       $('#btnWizard').onclick=()=>$('#wizard').showModal();
+      $('#wizard').addEventListener('click', e=>{ if (e.target.closest('[data-close]')) $('#wizard').close(); });
+      $('#detail').addEventListener('click', e=>{ if (e.target.closest('[data-close]')) $('#detail').close(); });
     }
 
-    /* boot */
     window.addEventListener('DOMContentLoaded', async ()=>{
       wireHeader();
       await load();
