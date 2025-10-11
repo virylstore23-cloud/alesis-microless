@@ -65,7 +65,7 @@
   .content{display:flex; flex-direction:column; gap:8px; padding:12px 12px 14px; min-height:176px}
   .title{font-weight:800; margin-top:4px}
 
-  /* SMALL price pill (applies everywhere) */
+  /* SMALL price pill */
   .pill{
     display:inline-flex; align-items:center; gap:6px;
     background:var(--pill); color:var(--pill-text);
@@ -129,10 +129,11 @@
 </head>
 
 <body>
-  <!-- Inline Dirham icon symbol (legal/local) -->
+  <!-- Inline Dirham icon symbol (local, safe) -->
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
-    <symbol id="aed-dirham" viewBox="0 0 344.84 299.91">
-      <path fill="currentColor" d="M342.14,140.96l2.7,2.54v-7.72c0-17-11.92-30.84-26.56-30.84h-23.41C278.49,36.7,222.69,0,139.68,0c-52.86,0-59.65,0-109.71,0,0,0,15.03,12.63,15.03,52.4v52.58h-27.68c-5.38,0-10.43-2.08-14.61-6.01l-2.7-2.54v7.72c0,17.01,11.92,30.84,26.56,30.84h18.44s0,29.99,0,29.99h-27.68c-5.38,0-10.43-2.07-14.61-6.01l-2.7-2.54v7.71c0,17,11.92,30.82,26.56,30.82h18.44s0,54.89,0,54.89c0,38.65-15.03,50.06-15.03,50.06h109.71c85.62,0,139.64-36.96,155.38-104.98h32.46c5.38,0,10.43,2.07,14.61,6l2.7,2.54v-7.71c0-17-11.92-30.83-26.56-30.83h-18.9c.32-4.88.49-9.87.49-15s-.18-10.11-.51-14.99h28.17c5.37,0,10.43,2.07,14.61,6.01ZM89.96,15.01h45.86c61.7,0,97.44,27.33,108.1,89.94l-153.96.02V15.01ZM136.21,284.93h-46.26v-89.98l153.87-.02c-9.97,56.66-42.07,88.38-107.61,90ZM247.34,149.96c0,5.13-.11,10.13-.34,14.99l-157.04.02v-29.99l157.05-.02c.22,4.84.33,9.83.33,15Z"/>
+    <symbol id="aed-dirham" viewBox="0 0 24 18">
+      <!-- stylized double-bar D -->
+      <path fill="currentColor" d="M3 2.5a1 1 0 0 1 1-1h6.2c4.3 0 6.8 2.6 6.9 6.0h2.1c.6 0 1 .4 1 1v.8c0 .6-.4 1-1 1h-2.1c-.4 3.9-3 6.7-6.9 6.7H4a1 1 0 0 1-1-1V10H2.2a1 1 0 0 1-1-1v-.8a1 1 0 0 1 1-1H3V2.5Zm2 0V7h6.2c-.5-3-2.3-4.5-5-4.5H5Zm11 6.5H5V8h11v1zm-4.8 6c2.7 0 4.6-1.6 5-4H5v4h6.2z"/>
     </symbol>
   </svg>
 
@@ -144,9 +145,7 @@
       <button id="btnWizard" class="btn btn-primary">Find my kit</button>
     </div>
 
-    <h2 style="margin:0 0 6px">
-      Electronic Drum Range <span class="sold-by"> Microless</span>
-    </h2>
+    <h2 style="margin:0 0 6px">Electronic Drum Range <span class="sold-by">Microless</span></h2>
     <div class="muted">Compare features and choose the perfect Alesis kit for practice, recording, or performance.</div>
 
     <div id="chips"></div>
@@ -165,15 +164,16 @@
       </div>
       <div class="right">
         <div class="chiprow">
-          <span id="dprice" class="pill price"><svg class="aed-icon" viewBox="0 0 344.84 299.91"><use href="#aed-dirham"></use></svg><span class="amt">—</span></span>
+          <span id="dprice" class="pill price"><svg class="aed-icon" viewBox="0 0 24 18"><use href="#aed-dirham"></use></svg><span class="amt">—</span></span>
           <span id="dupc" class="chip upc" style="display:none"></span>
           <span id="ddemo" class="chip" style="display:none;background:#ffd400;color:#231a00;font-weight:800" title=""></span>
         </div>
         <div id="dname" style="font-weight:900; font-size:18px; margin:2px 0 8px"></div>
 
         <div class="section"><h4>Description</h4><div id="ddesc" class="muted">—</div></div>
+        <div class="section"><h4>Key Features</h4><ul id="dfeat"></ul></div>
         <div class="section"><h4>What's Included</h4><ul id="dinc"></ul></div>
-        <div class="section"><h4>What's NOT Included</h4><ul id="dnot"></ul></div>
+        <div class="section" id="dni" style="display:none"><h4>What's NOT Included</h4><ul id="dnot"></ul></div>
         <div class="section"><h4>Quick Specs</h4><table class="specs" id="dspec"></table></div>
         <div style="margin-top:10px"><button class="btn btn-ghost" data-close>Close</button></div>
       </div>
@@ -244,7 +244,7 @@
     const $$ = (s,el=document)=>Array.from(el.querySelectorAll(s));
     const fmt = new Intl.NumberFormat('en-AE',{style:'decimal',minimumFractionDigits:2,maximumFractionDigits:2});
     const AED = v => (v==null||v==='') ? '—'
-      : `<svg class="aed-icon" viewBox="0 0 344.84 299.91"><use href="#aed-dirham"></use></svg><span class="amt">${fmt.format(+v)}</span>`;
+      : `<svg class="aed-icon" viewBox="0 0 24 18"><use href="#aed-dirham"></use></svg><span class="amt">${fmt.format(+v)}</span>`;
 
     const getUPC = r => r.upc_code || r.upc || r.ean || r.barcode || null;
 
@@ -258,27 +258,25 @@
       return [];
     };
 
-    const get = (obj, path) => path.split('.').reduce((o,k)=> (o && o[k]!==undefined ? o[k] : undefined), obj);
-
-    // === Alias map so UI can read fields from either top-level or specs.data ===
-    const ALIASES = {
-      kits_user:   ['kits_user','specs.data.user_kits'],
-      kits_factory:['kits_factory','specs.data.preset_kits'],
-      sounds:      ['sounds','specs.data.sounds_total'],
-      watt_peak:   ['watt_peak','specs.data.watt_peak'],
-      amp_watt_rms:['amp_watt_rms','specs.data.watt_rms']
+    /* dot-path getter with multi-path fallback */
+    const getPath = (obj, path)=>{
+      if (!obj || !path) return undefined;
+      return path.split('.').reduce((o,k)=> o?.[k], obj);
     };
-    const readAliased = (r, key)=>{
-      const paths = ALIASES[key] || [key];
-      for (const p of paths){
-        const v = p.includes('.') ? get(r,p) : r[p];
-        if (v !== undefined && v !== null && v !== '') return v;
+    const valFrom = (r, pathList, coerceYesNo=false)=>{
+      for (const p of pathList){
+        const v = typeof p==='function' ? p(r) : getPath(r, p);
+        if (v !== undefined && v !== null && v !== '') {
+          if (coerceYesNo) return v ? 'Yes' : 'No';
+          return v;
+        }
       }
-      return undefined;
+      return '—';
     };
 
     const getNotIncluded = r=>{
-      const s=r.specs?.not_included||r.specs?.notIncluded||r.specs?.data?.not_included||r.specs?.data?.notIncluded;
+      const s = r.specs?.not_included || r.specs?.notIncluded ||
+                r.specs?.data?.not_included || r.specs?.data?.notIncluded;
       return Array.from(new Set(toArray(s)));
     };
 
@@ -395,61 +393,60 @@
 
     function asList(node, arr){
       node.innerHTML = '';
-      const list = toArray(arr);
-      if (!list.length){ node.innerHTML = '<li>—</li>'; return; }
-      node.innerHTML = list.map(x=>`<li>${String(x)}</li>`).join('');
+      if (!Array.isArray(arr) || !arr.length){ node.innerHTML = '<li>—</li>'; return; }
+      node.innerHTML = arr.map(x=>`<li>${String(x)}</li>`).join('');
     }
     function specRow(label, val){
-      let v = (val===true)?'Yes' : (val===false||val==null||val==='')?'—' : val;
+      const v = (val===true)?'Yes' : (val===false||val==null||val==='')?'—' : val;
       return `<tr><td>${label}</td><td style="text-align:right">${v}</td></tr>`;
     }
 
-    // === qVal now uses alias fallback ===
-    function qVal(it, r){
-      if (!it) return '—';
-      if (it.value!=null) return it.value;
-      if (!it.key) return '—';
-      const v = readAliased(r, it.key);
-      if (it.format==='yesno') return v ? 'Yes' : 'No';
-      return (v==null||v==='') ? '—' : v;
-    }
-
+    /* --- UNIVERSAL QUICK BUILDER WITH ALIASES --- */
     function buildQuick(r){
-      const quickArr = (r.specs && Array.isArray(r.specs.quick)) ? r.specs.quick : null;
-      if (quickArr && quickArr.length) return quickArr;
+      // If explicit quick provided, use it first
+      if (Array.isArray(r.specs?.quick) && r.specs.quick.length) return r.specs.quick;
 
       const cat = deriveCategory(r);
       if (cat==='Drum Amplification'){
         return [
           {label:'Category', value:'Drum Amplification'},
-          {label:'Power', value:`${readAliased(r,'amp_watt_rms')||'—'} W RMS / ${readAliased(r,'watt_peak')||'—'} W peak`},
-          {label:'Bluetooth', key:'bluetooth_audio', format:'yesno'},
-          {label:'Inputs', value:r.specs?.data?.inputs || '—'},
-          {label:'Outputs', value:r.specs?.data?.outputs || '—'}
+          {label:'Woofer',  value: valFrom(r, ['specs.data.woofer_in','amp_woofer_in'], false) + (valFrom(r,['specs.data.woofer_in','amp_woofer_in'])!=='—'?'\"':'') },
+          {label:'Power',   value: (valFrom(r,['amp_watt_rms','specs.data.watt_rms'])!=='—'?valFrom(r,['amp_watt_rms','specs.data.watt_rms'])+' W RMS / ':'') + (valFrom(r,['watt_peak','specs.data.watt_peak'])!=='—'?valFrom(r,['watt_peak','specs.data.watt_peak'])+' W peak':'') || '—'},
+          {label:'Max SPL', value: valFrom(r, ['amp_max_spl_db','specs.data.max_spl_db'])!=='—'?valFrom(r,['amp_max_spl_db','specs.data.max_spl_db'])+' dB':'—'},
+          {label:'Freq. Response', value: (valFrom(r,['amp_freq_low_hz','specs.data.freq_low_hz'])!=='—'?valFrom(r,['amp_freq_low_hz','specs.data.freq_low_hz'])+' Hz':'—') + (valFrom(r,['amp_freq_high_hz','specs.data.freq_high_hz'])!=='—'?' – '+valFrom(r,['amp_freq_high_hz','specs.data.freq_high_hz'])+' Hz':'')},
+          {label:'Bluetooth', value: valFrom(r, ['bluetooth_audio'], true)},
+          {label:'Inputs',  value: valFrom(r, ['specs.data.inputs','amp_inputs'])},
+          {label:'Outputs', value: valFrom(r, ['specs.data.outputs','amp_outputs'])}
         ];
       }
+
       if (cat==='Multipads & Drum Machines'){
         return [
-          {label:'Category', value:cat},
-          {label:'USB/MIDI', key:'usb_midi', format:'yesno'},
-          {label:'Bluetooth', key:'bluetooth_audio', format:'yesno'}
+          {label:'Category', value:'Multipads & Drum Machines'},
+          {label:'Pads', value: valFrom(r,['specs.data.pads'])},
+          {label:'USB/MIDI', value: valFrom(r,['usb_midi','specs.data.usb_midi'], true)},
+          {label:'Bluetooth', value: valFrom(r,['bluetooth_audio'], true)},
+          {label:'Sounds', value: valFrom(r,['sounds','specs.data.sounds_total'])},
         ];
       }
+
       if (cat==='Accessories'){
         return [{label:'Category', value:'Accessories'}];
       }
+
+      // Drum Kits (default)
       return [
         {label:'Category', value:'Drum Kits'},
-        {label:'Mesh', key:'mesh', format:'yesno'},
-        {label:'USB/MIDI', key:'usb_midi', format:'yesno'},
-        {label:'Bluetooth', key:'bluetooth_audio', format:'yesno'},
-        {label:'Factory kits', key:'kits_factory'},
-        {label:'User kits', key:'kits_user'},          // <- now reads specs.data.user_kits if needed
-        {label:'Sounds', key:'sounds'},                 // <- reads specs.data.sounds_total if needed
-        {label:'Toms', key:'toms_count'},
-        {label:'Crash cymbals', key:'crash_count'},
-        {label:'Ride zones', key:'ride_zones'},
-        {label:'Kick tower', key:'kick_tower', format:'yesno'}
+        {label:'Mesh', value: valFrom(r,['mesh'], true)},
+        {label:'USB/MIDI', value: valFrom(r,['usb_midi','specs.data.usb_midi'], true)},
+        {label:'Bluetooth', value: valFrom(r,['bluetooth_audio'], true)},
+        {label:'Factory kits', value: valFrom(r,['kits_factory','specs.data.preset_kits'])},
+        {label:'User kits', value: valFrom(r,['kits_user','specs.data.user_kits','specs.data.kits_user'])},
+        {label:'Sounds', value: valFrom(r,['sounds','specs.data.sounds','specs.data.sounds_total'])},
+        {label:'Toms', value: valFrom(r,['toms_count'])},
+        {label:'Crash cymbals', value: valFrom(r,['crash_count'])},
+        {label:'Ride zones', value: valFrom(r,['ride_zones'])},
+        {label:'Kick tower', value: valFrom(r,['kick_tower'], true)}
       ];
     }
 
@@ -471,15 +468,22 @@
         dlab.title = label;
       } else {
         dlab.style.display='none';
-        dlab.title = '';
       }
 
       $('#ddesc').textContent = r.description || '—';
+      asList($('#dfeat'), r.features);
       asList($('#dinc'), r.contents);
-      asList($('#dnot'), getNotIncluded(r));
+
+      const notIncArr = getNotIncluded(r);
+      if (notIncArr.length){
+        $('#dni').style.display = 'block';
+        asList($('#dnot'), notIncArr);
+      } else {
+        $('#dni').style.display = 'none';
+      }
 
       const quick = buildQuick(r);
-      $('#dspec').innerHTML = quick.map(it => specRow(it.label || it.key || '', qVal(it, r))).join('');
+      $('#dspec').innerHTML = quick.map(it => specRow(it.label || it.key || '', it.value!=null?it.value:'—')).join('');
 
       const dlg = $('#detail');
       dlg.showModal();
@@ -505,7 +509,7 @@
               <div class="pad">
                 <div class="pill price" style="margin-bottom:6px">${AED(r.price)}</div>
                 <div class="title" style="margin:0 0 8px">${r.name||''}</div>
-                <table class="specs">${q.map(it=>specRow(it.label || it.key || '', qVal(it,r))).join('')}</table>
+                <table class="specs">${q.map(it=>specRow(it.label || it.key || '', it.value!=null?it.value:'—')).join('')}</table>
                 <div style="display:flex; gap:8px; margin-top:10px">
                   <button class="btn btn-ghost" data-open>Open</button>
                   <button class="btn btn-ghost" data-remove>Remove</button>
@@ -532,8 +536,8 @@
           const pct = base.price ? Math.round((diff/base.price)*100) : 0;
           const hints = [];
           if ((better.mesh||0) && !base.mesh) hints.push('mesh heads');
-          if ((+readAliased(better,'kits_factory')||0) > (+readAliased(base,'kits_factory')||0)) hints.push('more factory kits');
-          if ((+readAliased(better,'sounds')||0) > (+readAliased(base,'sounds')||0)) hints.push('more sounds');
+          if ((+valFrom(better,['kits_factory','specs.data.preset_kits'])||0) > (+valFrom(base,['kits_factory','specs.data.preset_kits'])||0)) hints.push('more factory kits');
+          if ((+valFrom(better,['sounds','specs.data.sounds','specs.data.sounds_total'])||0) > (+valFrom(base,['sounds','specs.data.sounds','specs.data.sounds_total'])||0)) hints.push('more sounds');
           if ((better.bluetooth_audio||0) && !base.bluetooth_audio) hints.push('Bluetooth audio');
           if ((better.usb_midi||0) && !base.usb_midi) hints.push('USB/MIDI');
           const why = hints.length ? hints.join(', ') : 'overall higher spec';
