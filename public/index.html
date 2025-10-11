@@ -49,13 +49,13 @@
   .btn-ghost{background:transparent}
   .sold-by{ color:#ffd400; font-weight:900; letter-spacing:.2px }
 
-  /* filter chips */
+  /* chips */
   #chips{display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 10px}
   .chip{border:1px solid var(--glass-brd); background:var(--panel); color:#cdeef2;
     padding:8px 12px; border-radius:999px; cursor:pointer; user-select:none}
   .chip.active{background:#0b2c34; border-color:#1db8c4}
 
-  /* grid cards */
+  /* grid */
   #grid{display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
   .card{display:flex; flex-direction:column; background:var(--glass); border:1px solid var(--glass-brd); border-radius:16px; overflow:hidden}
   .imgbox{position:relative; height:200px; background:#0b0e12; cursor:pointer}
@@ -65,7 +65,7 @@
   .content{display:flex; flex-direction:column; gap:8px; padding:12px 12px 14px; min-height:176px}
   .title{font-weight:800; margin-top:4px}
 
-  /* SMALL price pill */
+  /* small price pill */
   .pill{
     display:inline-flex; align-items:center; gap:6px;
     background:var(--pill); color:var(--pill-text);
@@ -74,7 +74,7 @@
   .pill.price{max-width:fit-content; width:auto; font-size:13px}
   .pill .amt{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 
-  /* Dirham icon (inline, legal) */
+  /* Dirham icon */
   .aed-icon{ width:14px; height:14px; display:inline-block; vertical-align:-1px; color:var(--pill-text) }
 
   .muted{color:var(--muted)}
@@ -114,7 +114,7 @@
   #ladder{border-top:1px solid var(--glass-brd); margin:4px 12px 14px; padding-top:10px}
   #ladder .row{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
 
-  /* Compare FAB */
+  /* FAB */
   #compareFab{
     position:fixed; right:16px; bottom:16px; z-index:60; display:none; align-items:center; gap:8px;
     padding:10px 14px; border-radius:999px; background:#ff2b2b; color:#fff; border:1px solid #ff2b2b; cursor:pointer
@@ -129,10 +129,13 @@
 </head>
 
 <body>
-  <!-- Inline Dirham icon symbol (local, safe) -->
-  <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+  <!-- Inline Dirham icon sprite: includes xlink fallback -->
+  <svg aria-hidden="true"
+       style="position:absolute;width:0;height:0;overflow:hidden"
+       xmlns="http://www.w3.org/2000/svg"
+       xmlns:xlink="http://www.w3.org/1999/xlink">
     <symbol id="aed-dirham" viewBox="0 0 24 18">
-      <!-- stylized double-bar D -->
+      <!-- stylized double-bar "D" dirham glyph; follows currentColor -->
       <path fill="currentColor" d="M3 2.5a1 1 0 0 1 1-1h6.2c4.3 0 6.8 2.6 6.9 6.0h2.1c.6 0 1 .4 1 1v.8c0 .6-.4 1-1 1h-2.1c-.4 3.9-3 6.7-6.9 6.7H4a1 1 0 0 1-1-1V10H2.2a1 1 0 0 1-1-1v-.8a1 1 0 0 1 1-1H3V2.5Zm2 0V7h6.2c-.5-3-2.3-4.5-5-4.5H5Zm11 6.5H5V8h11v1zm-4.8 6c2.7 0 4.6-1.6 5-4H5v4h6.2z"/>
     </symbol>
   </svg>
@@ -152,7 +155,7 @@
     <div id="grid"></div>
   </div>
 
-  <!-- Compare FAB -->
+  <!-- FAB -->
   <button id="compareFab"><span>Compare</span><span id="fabCount" class="bubble">0</span></button>
 
   <!-- Detail modal -->
@@ -164,7 +167,13 @@
       </div>
       <div class="right">
         <div class="chiprow">
-          <span id="dprice" class="pill price"><svg class="aed-icon" viewBox="0 0 24 18"><use href="#aed-dirham"></use></svg><span class="amt">—</span></span>
+          <span id="dprice" class="pill price">
+            <svg class="aed-icon" viewBox="0 0 24 18">
+              <use href="#aed-dirham"></use>
+              <use xlink:href="#aed-dirham"></use>
+            </svg>
+            <span class="amt">—</span>
+          </span>
           <span id="dupc" class="chip upc" style="display:none"></span>
           <span id="ddemo" class="chip" style="display:none;background:#ffd400;color:#231a00;font-weight:800" title=""></span>
         </div>
@@ -239,40 +248,45 @@
   </script>
 
   <script>
-    /* ===== helpers ===== */
+    /* ========= helpers ========= */
     const $  = (s,el=document)=>el.querySelector(s);
     const $$ = (s,el=document)=>Array.from(el.querySelectorAll(s));
+
     const fmt = new Intl.NumberFormat('en-AE',{style:'decimal',minimumFractionDigits:2,maximumFractionDigits:2});
     const AED = v => (v==null||v==='') ? '—'
-      : `<svg class="aed-icon" viewBox="0 0 24 18"><use href="#aed-dirham"></use></svg><span class="amt">${fmt.format(+v)}</span>`;
+      : `<svg class="aed-icon" viewBox="0 0 24 18"><use href="#aed-dirham"></use><use xlink:href="#aed-dirham"></use></svg><span class="amt">${fmt.format(+v)}</span>`;
 
-    const getUPC = r => r.upc_code || r.upc || r.ean || r.barcode || null;
-
+    const tryJson = (x)=>{
+      if (x==null) return null;
+      if (typeof x==='object') return x;
+      if (typeof x==='string'){
+        try{ return JSON.parse(x); }catch{ return x; }
+      }
+      return x;
+    };
     const toArray = v=>{
+      v = tryJson(v);
       if (Array.isArray(v)) return v;
       if (v==null||v===false) return [];
       if (typeof v==='string'){
-        try{const j=JSON.parse(v); if(Array.isArray(j)) return j;}catch{}
         return v.split(/\r?\n|,|•|-\s|\u2022/g).map(s=>s.trim()).filter(Boolean);
       }
       return [];
     };
 
-    /* dot-path getter with multi-path fallback */
     const getPath = (obj, path)=>{
       if (!obj || !path) return undefined;
       return path.split('.').reduce((o,k)=> o?.[k], obj);
     };
-    const valFrom = (r, pathList, coerceYesNo=false)=>{
+    const valFrom = (r, pathList, yesNo=false)=>{
       for (const p of pathList){
         const v = typeof p==='function' ? p(r) : getPath(r, p);
-        if (v !== undefined && v !== null && v !== '') {
-          if (coerceYesNo) return v ? 'Yes' : 'No';
-          return v;
-        }
+        if (v !== undefined && v !== null && v !== '') return yesNo ? (v ? 'Yes' : 'No') : v;
       }
       return '—';
     };
+
+    const getUPC = r => r.upc_code || r.upc || r.ean || r.barcode || null;
 
     const getNotIncluded = r=>{
       const s = r.specs?.not_included || r.specs?.notIncluded ||
@@ -319,7 +333,19 @@
           return;
         }
         const rows = await res.json();
-        rows.forEach(r=>r._cat = deriveCategory(r));
+
+        // Normalize incoming rows and parse JSON-ish fields
+        rows.forEach(r=>{
+          r._cat = deriveCategory(r);
+          r.specs = tryJson(r.specs) || {};
+          if (typeof r.specs !== 'object') r.specs = {};
+          if (r.specs.data && typeof r.specs.data === 'string') {
+            r.specs.data = tryJson(r.specs.data) || {};
+          }
+          r.features = toArray(r.features);
+          r.contents = toArray(r.contents);
+        });
+
         state.rows = rows;
         state.byId = new Map(rows.map(r=>[String(r.id),r]));
         wireChips();
@@ -327,6 +353,7 @@
         updateFab();
       }catch(err){
         $('#grid').innerHTML = `<div class="muted">Network error. Check console.</div>`;
+        console.error(err);
       }
     }
 
@@ -366,7 +393,12 @@
           <div class="card" data-id="${r.id}">
             <div class="imgbox" data-open><img src="${pickImage(r,'card')}" alt="">${demo}</div>
             <div class="content">
-              <div class="pill price">${AED(r.price)}</div>
+              <div class="pill price">
+                <svg class="aed-icon" viewBox="0 0 24 18">
+                  <use href="#aed-dirham"></use><use xlink:href="#aed-dirham"></use>
+                </svg>
+                <span class="amt">${fmt.format(+r.price||0)}</span>
+              </div>
               <div class="title">${r.name||''}</div>
               ${upc?`<div class="muted" style="margin-bottom:2px">UPC: ${upc}</div>`:''}
               <div class="tagrow">${pills.map(p=>`<span class="chip">${p}</span>`).join('')}</div>
@@ -401,19 +433,35 @@
       return `<tr><td>${label}</td><td style="text-align:right">${v}</td></tr>`;
     }
 
-    /* --- UNIVERSAL QUICK BUILDER WITH ALIASES --- */
-    function buildQuick(r){
-      // If explicit quick provided, use it first
-      if (Array.isArray(r.specs?.quick) && r.specs.quick.length) return r.specs.quick;
+    function resolveQuickFromSpec(r, arr){
+      return arr.map(it=>{
+        if (!it) return {label:'', value:'—'};
+        if (it.value !== undefined && it.value !== null && it.value !== '') {
+          return {label: it.label || it.key || '', value: it.value};
+        }
+        if (it.key){
+          const v = getPath(r, it.key);
+          if (it.format === 'yesno') return {label: it.label || it.key, value: v ? 'Yes' : 'No'};
+          return {label: it.label || it.key, value: (v===''||v==null)?'—':v};
+        }
+        return {label: it.label || '', value: '—'};
+      });
+    }
 
+    function buildQuickAuto(r){
       const cat = deriveCategory(r);
       if (cat==='Drum Amplification'){
+        const wo = valFrom(r, ['specs.data.woofer_in','amp_woofer_in']);
+        const rms = valFrom(r, ['amp_watt_rms','specs.data.watt_rms']);
+        const pk  = valFrom(r, ['watt_peak','specs.data.watt_peak']);
+        const frL = valFrom(r, ['amp_freq_low_hz','specs.data.freq_low_hz']);
+        const frH = valFrom(r, ['amp_freq_high_hz','specs.data.freq_high_hz']);
         return [
           {label:'Category', value:'Drum Amplification'},
-          {label:'Woofer',  value: valFrom(r, ['specs.data.woofer_in','amp_woofer_in'], false) + (valFrom(r,['specs.data.woofer_in','amp_woofer_in'])!=='—'?'\"':'') },
-          {label:'Power',   value: (valFrom(r,['amp_watt_rms','specs.data.watt_rms'])!=='—'?valFrom(r,['amp_watt_rms','specs.data.watt_rms'])+' W RMS / ':'') + (valFrom(r,['watt_peak','specs.data.watt_peak'])!=='—'?valFrom(r,['watt_peak','specs.data.watt_peak'])+' W peak':'') || '—'},
-          {label:'Max SPL', value: valFrom(r, ['amp_max_spl_db','specs.data.max_spl_db'])!=='—'?valFrom(r,['amp_max_spl_db','specs.data.max_spl_db'])+' dB':'—'},
-          {label:'Freq. Response', value: (valFrom(r,['amp_freq_low_hz','specs.data.freq_low_hz'])!=='—'?valFrom(r,['amp_freq_low_hz','specs.data.freq_low_hz'])+' Hz':'—') + (valFrom(r,['amp_freq_high_hz','specs.data.freq_high_hz'])!=='—'?' – '+valFrom(r,['amp_freq_high_hz','specs.data.freq_high_hz'])+' Hz':'')},
+          {label:'Woofer',  value: wo==='—'?'—':`${wo}"`},
+          {label:'Power',   value: (rms!=='—'?`${rms} W RMS`:'') + (rms!=='—'&&pk!=='—'?' / ':'') + (pk!=='—'?`${pk} W peak`:'') || '—'},
+          {label:'Max SPL', value: valFrom(r, ['amp_max_spl_db','specs.data.max_spl_db'])!=='—'?`${valFrom(r, ['amp_max_spl_db','specs.data.max_spl_db'])} dB`:'—'},
+          {label:'Freq. Response', value: (frL!=='—'?`${frL} Hz`:'—') + (frH!=='—'?` – ${frH} Hz`:'' )},
           {label:'Bluetooth', value: valFrom(r, ['bluetooth_audio'], true)},
           {label:'Inputs',  value: valFrom(r, ['specs.data.inputs','amp_inputs'])},
           {label:'Outputs', value: valFrom(r, ['specs.data.outputs','amp_outputs'])}
@@ -434,7 +482,7 @@
         return [{label:'Category', value:'Accessories'}];
       }
 
-      // Drum Kits (default)
+      // Drum Kits
       return [
         {label:'Category', value:'Drum Kits'},
         {label:'Mesh', value: valFrom(r,['mesh'], true)},
@@ -448,6 +496,14 @@
         {label:'Ride zones', value: valFrom(r,['ride_zones'])},
         {label:'Kick tower', value: valFrom(r,['kick_tower'], true)}
       ];
+    }
+
+    function buildQuick(r){
+      const quickFromSpec = Array.isArray(r.specs?.quick) ? r.specs.quick : null;
+      if (quickFromSpec && quickFromSpec.length){
+        return resolveQuickFromSpec(r, quickFromSpec);
+      }
+      return buildQuickAuto(r);
     }
 
     function openDetail(id){
@@ -491,7 +547,7 @@
       dlg.addEventListener('click', e=>{
         const sheet = dlg.querySelector('.sheet');
         const rct = sheet.getBoundingClientRect();
-        if (e.clientX<rct.left||e.clientX>rct.right||e.clientY<rct.top||e.clientY>rct.bottom) dlg.close();
+        if (e.clientX<rct.left||e.clientX>rct.right||e.clientY<rct.bottom||e.clientY>rct.bottom) {}
       }, {once:true});
     }
 
@@ -507,7 +563,12 @@
           return `
             <div class="col" data-id="${r.id}">
               <div class="pad">
-                <div class="pill price" style="margin-bottom:6px">${AED(r.price)}</div>
+                <div class="pill price">
+                  <svg class="aed-icon" viewBox="0 0 24 18">
+                    <use href="#aed-dirham"></use><use xlink:href="#aed-dirham"></use>
+                  </svg>
+                  <span class="amt">${fmt.format(+r.price||0)}</span>
+                </div>
                 <div class="title" style="margin:0 0 8px">${r.name||''}</div>
                 <table class="specs">${q.map(it=>specRow(it.label || it.key || '', it.value!=null?it.value:'—')).join('')}</table>
                 <div style="display:flex; gap:8px; margin-top:10px">
@@ -536,8 +597,12 @@
           const pct = base.price ? Math.round((diff/base.price)*100) : 0;
           const hints = [];
           if ((better.mesh||0) && !base.mesh) hints.push('mesh heads');
-          if ((+valFrom(better,['kits_factory','specs.data.preset_kits'])||0) > (+valFrom(base,['kits_factory','specs.data.preset_kits'])||0)) hints.push('more factory kits');
-          if ((+valFrom(better,['sounds','specs.data.sounds','specs.data.sounds_total'])||0) > (+valFrom(base,['sounds','specs.data.sounds','specs.data.sounds_total'])||0)) hints.push('more sounds');
+          const fkB = +valFrom(better,['kits_factory','specs.data.preset_kits'])||0;
+          const fkA = +valFrom(base,  ['kits_factory','specs.data.preset_kits'])||0;
+          if (fkB>fkA) hints.push('more factory kits');
+          const sndB = +valFrom(better,['sounds','specs.data.sounds','specs.data.sounds_total'])||0;
+          const sndA = +valFrom(base,  ['sounds','specs.data.sounds','specs.data.sounds_total'])||0;
+          if (sndB>sndA) hints.push('more sounds');
           if ((better.bluetooth_audio||0) && !base.bluetooth_audio) hints.push('Bluetooth audio');
           if ((better.usb_midi||0) && !base.usb_midi) hints.push('USB/MIDI');
           const why = hints.length ? hints.join(', ') : 'overall higher spec';
@@ -546,11 +611,17 @@
               <h4 style="margin-bottom:8px">Recommendation Ladder</h4>
               <div class="row" style="margin-bottom:6px">
                 <span class="chip">Baseline</span>
-                <b>${base.name}</b> — <span class="pill price" style="padding:4px 8px">${AED(base.price)}</span>
+                <b>${base.name}</b> — <span class="pill price" style="padding:4px 8px">
+                  <svg class="aed-icon" viewBox="0 0 24 18"><use href="#aed-dirham"></use><use xlink:href="#aed-dirham"></use></svg>
+                  <span class="amt">${fmt.format(+base.price||0)}</span>
+                </span>
               </div>
               <div class="row" style="margin-bottom:6px">
                 <span class="chip">Jump to</span>
-                <b>${better.name}</b> — <span class="pill price" style="padding:4px 8px">${AED(better.price)}</span>
+                <b>${better.name}</b> — <span class="pill price" style="padding:4px 8px">
+                  <svg class="aed-icon" viewBox="0 0 24 18"><use href="#aed-dirham"></use><use xlink:href="#aed-dirham"></use></svg>
+                  <span class="amt">${fmt.format(+better.price||0)}</span>
+                </span>
                 <span class="chip" style="background:#143a42;border:1px solid #1a4f59">+${fmt.format(diff)} (${pct}%)</span>
               </div>
               <div class="muted">Why: ${why}.</div>
@@ -573,7 +644,6 @@
     }
     document.getElementById('compareFab').addEventListener('click', ()=>openCompare());
 
-    /* header */
     function wireHeader(){
       $('#btnCompare').onclick=()=>openCompare();
       $('#btnWizard').onclick=()=>$('#wizard').showModal();
