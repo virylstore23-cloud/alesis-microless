@@ -230,7 +230,7 @@
     </div>
   </dialog>
 
-  <!-- ENV (wired to your project; rotate key later for safety) -->
+  <!-- ENV -->
   <script>
     window.ENV = {
       SUPABASE_URL: "https://sagrlpgfdwmtzsijlyjk.supabase.co",
@@ -268,6 +268,32 @@
       return 'Drum Kits';
     }
 
+    /* ---- NOT INCLUDED robust helpers ---- */
+    function toArray(val){
+      if (Array.isArray(val)) return val;
+      if (val == null || val === false) return [];
+      if (typeof val === 'string'){
+        try { const j = JSON.parse(val); if (Array.isArray(j)) return j; } catch {}
+        return val
+          .split(/\r?\n|,|•|-\s|\u2022/g)
+          .map(s => s.trim())
+          .filter(Boolean);
+      }
+      return [];
+    }
+    function getNotIncluded(r){
+      const fromSpecs =
+        (r.specs?.not_included) ||
+        (r.specs?.notIncluded) ||
+        (r.specs?.data?.not_included) ||
+        (r.specs?.data?.notIncluded);
+      const fromTop =
+        r.not_included ||
+        r.notIncluded;
+      const merged = [...toArray(fromSpecs), ...toArray(fromTop)];
+      return Array.from(new Set(merged)); // de-dupe
+    }
+
     const state = { rows:[], byId:new Map(), compare:new Set(), filterLabel:'All' };
 
     /* ===== fetch data ===== */
@@ -277,7 +303,9 @@
           'id,name,description,price,upc,upc_code,is_active,slug,category',
           'primary_image_url,detail_image_url,on_demo,on_demo_label',
           'features,contents,specs,kits_factory,kits_user,sounds,mesh,usb_midi,bluetooth_audio',
-          'toms_count,crash_count,ride_zones,kick_tower'
+          'toms_count,crash_count,ride_zones,kick_tower',
+          // fetch potential top-level fields too:
+          'not_included,notIncluded'
         ].join(',') + '&order=price.desc.nullslast';
 
       const headers={apikey:window.ENV.SUPABASE_ANON_KEY, Authorization:`Bearer ${window.ENV.SUPABASE_ANON_KEY}`};
@@ -448,12 +476,13 @@
       asList($('#dfeat'), r.features);
       asList($('#dinc'), r.contents);
 
-      const notInc = (r.specs && (r.specs.not_included || r.specs.notIncluded)) || null;
-      if (Array.isArray(notInc) && notInc.length){
-        $('#dni').style.display='block';
-        asList($('#dnot'), notInc);
-      }else{
-        $('#dni').style.display='none';
+      /* What's NOT included (robust) */
+      const notIncArr = getNotIncluded(r);
+      if (notIncArr.length){
+        $('#dni').style.display = 'block';
+        asList($('#dnot'), notIncArr);
+      } else {
+        $('#dni').style.display = 'none';
       }
 
       const quick = buildQuick(r);
