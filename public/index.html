@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Alesis Sold By Microless</title>
 
+<!-- Optional: preload the AED icon for snappier paint -->
+<link rel="preload" as="image" href="/public/aed.svg" />
+
 <style>
   :root{
     --bg:#000000;
@@ -93,8 +96,15 @@
   .pill{display:inline-flex; align-items:center; gap:8px;
     background:var(--pill); color:var(--pill-text); border-radius:9999px; padding:8px 12px; font-weight:800; line-height:1}
   .pill.price{max-width:fit-content; width:auto; font-size:15px}
-  .aed-icon{width:16px; height:16px; background:var(--pill-text);
-    mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M6 4h12v2H6zm0 7h12v2H6zm0 7h12v2H6z"/></svg>') center/contain no-repeat; display:inline-block}
+
+  /* AED icon via public/aed.svg */
+  .aed-icon{
+    width:16px; height:16px; display:inline-block;
+    background: var(--pill-text);
+    -webkit-mask: url('/public/aed.svg') center/contain no-repeat;
+    mask:         url('/public/aed.svg') center/contain no-repeat;
+  }
+
   .muted{color:var(--muted)}
   .tagrow{display:flex; gap:6px; flex-wrap:wrap}
   .tagrow .chip{background:#082b33;border-color:#11424a}
@@ -112,7 +122,20 @@
   .left{background:var(--panel); border:1px solid var(--glass-brd); border-radius:16px; padding:12px}
   .left .imgwrap{background:#fff; border-radius:12px; overflow:hidden; height:min(58vh,520px)}
   .left .imgwrap img{width:100%; height:100%; object-fit:contain; display:block}
-  .right .chiprow{display:flex; gap:8px; align-items:center; margin-bottom:10px}
+
+  /* === Fix overflow of long chips (e.g., "Play this kit") === */
+  .right .chiprow{
+    display:flex; gap:8px; align-items:center; margin-bottom:10px;
+    flex-wrap:wrap;                 /* allow wrapping on small screens */
+  }
+  .right .chiprow .chip,
+  #ddemo{
+    max-width:100%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;             /* truncate long labels gracefully */
+  }
+
   .chip.price{background:#0b3f45; border:1px solid #125056}
   .chip.upc{background:#052d33; border:1px solid #0f4950}
   .section{border:1px solid var(--glass-brd); border-radius:12px; padding:12px; margin-top:12px; background:rgba(7,12,16,.66)}
@@ -157,7 +180,7 @@
     </div>
 
     <h2 style="margin:0 0 6px">
-      Electronic Drum Range <span class="sold-by">Microless</span>
+      Electronic Drum Range <span class="sold-by">Sold By Microless</span>
     </h2>
     <div class="muted">Compare features and choose the perfect Alesis kit for practice, recording, or performance.</div>
 
@@ -179,7 +202,7 @@
         <div class="chiprow">
           <span id="dprice" class="pill price"><span class="aed-icon" aria-hidden="true"></span><span class="amt">—</span></span>
           <span id="dupc" class="chip upc" style="display:none"></span>
-          <span id="ddemo" class="chip" style="display:none;background:#ffd400;color:#231a00;font-weight:800"></span>
+          <span id="ddemo" class="chip" style="display:none;background:#ffd400;color:#231a00;font-weight:800" title=""></span>
         </div>
         <div id="dname" style="font-weight:900; font-size:18px; margin:2px 0 8px"></div>
 
@@ -486,9 +509,17 @@
       const upc = getUPC(r);
       const upcEl = $('#dupc');
       if (upc){ upcEl.style.display='inline-block'; upcEl.textContent = `UPC: ${upc}`; } else upcEl.style.display='none';
+
       const dlab = $('#ddemo');
-      if (r.on_demo){ dlab.style.display='inline-block'; dlab.textContent = r.on_demo_label || 'On Demo'; }
-      else dlab.style.display='none';
+      if (r.on_demo){
+        const label = r.on_demo_label || 'On Demo';
+        dlab.style.display='inline-block';
+        dlab.textContent = label;
+        dlab.title = label; // so full text is visible on hover even if truncated
+      } else {
+        dlab.style.display='none';
+        dlab.title = '';
+      }
 
       $('#ddesc').textContent = r.description || '—';
       asList($('#dfeat'), r.features);
