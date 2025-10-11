@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Alesis Sold By Microless</title>
 
-<!-- Optional: preload the AED icon for snappier paint -->
-<link rel="preload" as="image" href="/public/aed.svg" />
+<!-- Preload the AED icon (adjust href to where you actually serve it) -->
+<link rel="preload" as="image" href="/aed.svg" />
 
 <style>
   :root{
@@ -27,11 +27,11 @@
   body{
     margin:0;
     color:var(--text);
-    background:#000; /* solid black base */
+    background:#000;
     font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif;
     -webkit-font-smoothing:antialiased;
 
-    /* Stronger, wider glow starting top-left and flowing across */
+    /* Enhanced yellow glow sweeping from the top-left */
     background-image:
       radial-gradient(1200px 900px at 0% 0%, rgba(255,215,0,0.22) 0%, rgba(255,200,0,0.12) 30%, transparent 70%),
       radial-gradient(1400px 900px at 55% 20%, rgba(255,170,0,0.10) 0%, transparent 60%),
@@ -40,7 +40,6 @@
     background-attachment:fixed;
     overflow-x:hidden;
   }
-  /* Extra buttery-smooth glow layer */
   body::before{
     content:"";
     position:fixed;
@@ -75,7 +74,6 @@
   .btn-primary{background:#ff2b2b; border-color:#ff2b2b}
   .btn-ghost{background:transparent}
 
-  /* yellow suffix in title */
   .sold-by{ color:#ffd400; font-weight:900; letter-spacing:.2px }
 
   /* filter chips */
@@ -97,13 +95,16 @@
     background:var(--pill); color:var(--pill-text); border-radius:9999px; padding:8px 12px; font-weight:800; line-height:1}
   .pill.price{max-width:fit-content; width:auto; font-size:15px}
 
-  /* AED icon via public/aed.svg */
+  /* AED icon — color inherits from background via mask */
   .aed-icon{
     width:16px; height:16px; display:inline-block;
     background: var(--pill-text);
-    -webkit-mask: url('/public/aed.svg') center/contain no-repeat;
-    mask:         url('/public/aed.svg') center/contain no-repeat;
+    /* mask-image is set via JS for broad support */
+    -webkit-mask-position:center; -webkit-mask-repeat:no-repeat; -webkit-mask-size:contain;
+    mask-position:center; mask-repeat:no-repeat; mask-size:contain;
   }
+  /* Fallback to text if mask-image fails */
+  .aed-fallback{ display:inline-flex; align-items:center; font-weight:900; }
 
   .muted{color:var(--muted)}
   .tagrow{display:flex; gap:6px; flex-wrap:wrap}
@@ -123,17 +124,17 @@
   .left .imgwrap{background:#fff; border-radius:12px; overflow:hidden; height:min(58vh,520px)}
   .left .imgwrap img{width:100%; height:100%; object-fit:contain; display:block}
 
-  /* === Fix overflow of long chips (e.g., "Play this kit") === */
+  /* Prevent chip overflow (e.g., “Play this kit…”) */
   .right .chiprow{
     display:flex; gap:8px; align-items:center; margin-bottom:10px;
-    flex-wrap:wrap;                 /* allow wrapping on small screens */
+    flex-wrap:wrap;
   }
   .right .chiprow .chip,
   #ddemo{
     max-width:100%;
     overflow:hidden;
     text-overflow:ellipsis;
-    white-space:nowrap;             /* truncate long labels gracefully */
+    white-space:nowrap;
   }
 
   .chip.price{background:#0b3f45; border:1px solid #125056}
@@ -162,7 +163,6 @@
   }
   #compareFab .bubble{background:#fff;color:#ff2b2b; border-radius:999px; padding:2px 8px; font-weight:800}
 
-  /* mobile tweaks */
   @media (max-width:720px){
     .sheet{grid-template-columns:1fr}
     .left .imgwrap{height:44vh}
@@ -296,7 +296,14 @@
     const $ = (s,el=document)=>el.querySelector(s);
     const $$ = (s,el=document)=>Array.from(el.querySelectorAll(s));
     const fmt = new Intl.NumberFormat('en-AE',{style:'decimal',minimumFractionDigits:2,maximumFractionDigits:2});
-    const AED = v => (v==null||v==='') ? '—' : `<span class="aed-icon" aria-hidden="true"></span><span class="amt">${fmt.format(+v)}</span>`;
+
+    // --- AED amount builder using the masked SVG icon ---
+    const AED = v => {
+      if (v==null || v==='') return '—';
+      // If we had to fall back, we’ll swap .aed-icon with .aed-fallback via JS
+      return `<span class="aed-icon" aria-hidden="true"></span><span class="amt">${fmt.format(+v)}</span>`;
+    };
+
     function getUPC(r){ return r.upc_code || r.upc || r.ean || r.barcode || null; }
     function pickImage(r,kind='card'){
       const direct = (kind==='detail' && (r.detail_image_url)) || r.primary_image_url || r.image_url;
@@ -515,7 +522,7 @@
         const label = r.on_demo_label || 'On Demo';
         dlab.style.display='inline-block';
         dlab.textContent = label;
-        dlab.title = label; // so full text is visible on hover even if truncated
+        dlab.title = label;
       } else {
         dlab.style.display='none';
         dlab.title = '';
@@ -525,7 +532,6 @@
       asList($('#dfeat'), r.features);
       asList($('#dinc'), r.contents);
 
-      /* What's NOT included (from specs.* only) */
       const notIncArr = getNotIncluded(r);
       if (notIncArr.length){
         $('#dni').style.display = 'block';
@@ -670,6 +676,38 @@
       $('#btnCompare').onclick=()=>openCompare();
       $('#btnWizard').onclick=()=>openWizard();
     }
+
+    /* ===== AED ICON: robust hookup with fallback ===== */
+    (function hookAedIcon(){
+      // Adjust this to where the SVG is served:
+      // - If your build tool copies /public to domain root → use "/aed.svg"
+      // - If the SVG sits at ./public/aed.svg and you serve HTML from root → use "/public/aed.svg"
+      // - If the SVG is next to this HTML → use "./aed.svg"
+      const AED_ICON_PATH = "/aed.svg";
+
+      function applyMask(el){
+        el.style.webkitMaskImage = `url('${AED_ICON_PATH}')`;
+        el.style.maskImage = `url('${AED_ICON_PATH}')`;
+      }
+
+      function toFallback(el){
+        const s = document.createElement('span');
+        s.className = 'aed-fallback';
+        s.textContent = 'د.إ';
+        el.replaceWith(s);
+      }
+
+      // Preflight: try to load the icon once
+      const testImg = new Image();
+      testImg.onload = ()=>{
+        $$('.aed-icon').forEach(applyMask);
+      };
+      testImg.onerror = ()=>{
+        // Icon not reachable → swap all occurrences to text fallback
+        $$('.aed-icon').forEach(toFallback);
+      };
+      testImg.src = AED_ICON_PATH;
+    })();
 
     /* ===== boot ===== */
     window.addEventListener('DOMContentLoaded', async ()=>{
