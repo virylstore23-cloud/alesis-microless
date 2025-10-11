@@ -7,28 +7,30 @@
 
 <style>
   :root{
-    --bg:#0b0f13;
+    --bg:#000000;
     --panel:#0f141a;
     --glass:rgba(15,21,27,.72);
     --glass-brd:rgba(55,137,153,.35);
     --chip:#0d2e35;
     --chip-brd:#12434d;
-    --pill:#00c7d8;
-    --pill-text:#002326;
+    --pill:#ffd400;      /* yellow pill */
+    --pill-text:#231a00; /* dark text on yellow */
     --text:#e9f7ff;
     --muted:#a7bdc5;
     --line:rgba(86,150,160,.35);
   }
 
-  /* page + theme */
   html,body{height:100%}
   body{
-    margin:0; color:var(--text); background:var(--bg);
+    margin:0; color:var(--text); background:#000; /* solid black base */
     font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif;
     -webkit-font-smoothing:antialiased;
+
+    /* black + yellow glow gradients */
     background-image:
-      radial-gradient(800px 520px at 20% 12%, rgba(0,209,234,.08) 0,transparent 62%),
-      radial-gradient(800px 520px at 88% 8%, rgba(0,209,234,.07) 0,transparent 60%);
+      radial-gradient(900px 540px at 20% 12%, rgba(255,212,0,0.12) 0, transparent 60%),
+      radial-gradient(900px 540px at 85% 10%, rgba(255,170,0,0.10) 0, transparent 58%),
+      linear-gradient(180deg, #000 0%, #0a0a0a 100%);
   }
   .wrap{max-width:1160px; margin:28px auto; padding:0 16px}
 
@@ -62,7 +64,8 @@
   .pill{display:inline-flex; align-items:center; gap:8px;
     background:var(--pill); color:var(--pill-text); border-radius:9999px; padding:8px 12px; font-weight:800; line-height:1}
   .pill.price{max-width:fit-content; width:auto; font-size:15px}
-  .aed-icon{width:16px; height:16px; background:var(--pill-text); mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M6 4h12v2H6zm0 7h12v2H6zm0 7h12v2H6z"/></svg>') center/contain no-repeat; display:inline-block}
+  .aed-icon{width:16px; height:16px; background:var(--pill-text);
+    mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M6 4h12v2H6zm0 7h12v2H6zm0 7h12v2H6z"/></svg>') center/contain no-repeat; display:inline-block}
   .muted{color:var(--muted)}
   .tagrow{display:flex; gap:6px; flex-wrap:wrap}
   .tagrow .chip{background:#082b33;border-color:#11424a}
@@ -227,7 +230,7 @@
     </div>
   </dialog>
 
-  <!-- Inline env (replace with your real values or load /env.js) -->
+  <!-- ENV (wired to your project; rotate key later for safety) -->
   <script>
     window.ENV = {
       SUPABASE_URL: "https://sagrlpgfdwmtzsijlyjk.supabase.co",
@@ -283,7 +286,7 @@
         if(!res.ok){
           const text = await res.text();
           console.error('Load failed', res.status, text);
-          $('#grid').innerHTML = `<div class="muted">Can't load data (HTTP ${res.status}). Check ENV, table/columns, and RLS.\n\n${text.replace(/</g,'&lt;')}</div>`;
+          $('#grid').innerHTML = `<div class="muted">Can't load data (HTTP ${res.status}). Check ENV, table/columns, and RLS.<br><br>${text.replace(/</g,'&lt;')}</div>`;
           return;
         }
         const rows = await res.json();
