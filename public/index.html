@@ -211,11 +211,14 @@
     </div>
   </dialog>
 
+  <!-- Supabase client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
-    // ===== ENV =====
+    // ===== ENV (YOUR LIVE PROJECT) =====
     window.ENV = {
-      SUPABASE_URL: "https://sagrlpgfdwmtzsijlyjk.supabase.co",
-      SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhZ3JscGdmZHdtdHpzaWpseWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMDY2MzEsImV4cCI6MjA3NTY4MjYzMX0.yQR332GzntPAKKrElttuEIaec-xAjHlQdRNd4oagbvM"
+      SUPABASE_URL: "https://fjaconpprrogkiqzkyof.supabase.co",
+      SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqYWNvbnBwcnJvZ2tpcXpreW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzNzY4MjYsImV4cCI6MjA3Mzk1MjgyNn0.tb1_-MjYSUFgvUc9h5hWvT22baJQkrZ-JAdfPnEotRs"
     };
 
     // ===== helpers =====
@@ -254,7 +257,7 @@
          </svg>`);
     };
 
-    // ===== alias map (supports both of your Supabase shapes) =====
+    // ===== alias map =====
     const ALIASES = {
       kits_user:    ['kits_user','user_kits','specs.data.user_kits'],
       kits_factory: ['kits_factory','specs.data.preset_kits'],
@@ -271,14 +274,13 @@
       return undefined;
     };
 
-    // ===== normalize data right after fetch =====
+    // ===== normalize data =====
     function normalizeRows(rows){
       rows.forEach(r=>{
         if (typeof r.specs === 'string') { try { r.specs = JSON.parse(r.specs); } catch { r.specs = {}; } }
         if (!r.specs || typeof r.specs !== 'object') r.specs = {};
         if (!r.specs.data || typeof r.specs.data !== 'object') r.specs.data = r.specs.data ?? {};
 
-        // unify and keep types (numbers become numbers; keep strings like "Unlimited")
         const numish = v => {
           if (v==null || v==='') return null;
           if (typeof v === 'string' && v.trim().toLowerCase() === 'unlimited') return 'Unlimited';
@@ -354,36 +356,39 @@
     const state = { rows:[], byId:new Map(), compare:new Set(), filterLabel:'All' };
 
     async function load(){
-      const url = `${window.ENV.SUPABASE_URL}/rest/v1/drum_kits?select=`+
-        [
-          'id,name,description,price,upc,upc_code,is_active,slug,category',
-          'primary_image_url,detail_image_url,on_demo,on_demo_label',
-          // include possible columns you rely on
-          'features,contents,specs,kits_factory,kits_user,user_kits,sounds,sounds_total,mesh,usb_midi,bluetooth_audio',
-          'toms_count,crash_count,ride_zones,kick_tower'
-        ].join(',') + '&order=price.desc.nullslast';
+      console.log("Supabase URL", ENV.SUPABASE_URL);
+      const supabase = window.supabase.createClient(ENV.SUPABASE_URL, ENV.SUPABASE_ANON_KEY);
 
-      const headers={apikey:window.ENV.SUPABASE_ANON_KEY, Authorization:`Bearer ${window.ENV.SUPABASE_ANON_KEY}`};
       try{
-        const res = await fetch(url,{headers});
-        if(!res.ok){
-          const text = await res.text();
-          $('#grid').innerHTML = `<div class="muted">Can't load data (HTTP ${res.status}).<br>${text.replace(/</g,'&lt;')}</div>`;
-          return;
-        }
-        const rows = await res.json();
-        normalizeRows(rows);                       // <<< key step
-        rows.forEach(r=>r._cat = deriveCategory(r));
-        state.rows = rows;
-        state.byId = new Map(rows.map(r=>[String(r.id),r]));
+        const { data, error } = await supabase
+          .from('drum_kits')
+          .select(`
+            id,name,description,price,upc,upc_code,is_active,slug,category,
+            primary_image_url,detail_image_url,on_demo,on_demo_label,
+            features,contents,specs,mesh,usb_midi,bluetooth_audio,
+            toms_count,crash_count,ride_zones,kick_tower,
+            kits_factory,sounds,
+            user_kits:specs->data->>user_kits,
+            sounds_total:specs->data->>sounds_total
+          `)
+          .order('price', { ascending:false, nullsFirst:false });
+
+        if (error) throw error;
+
+        normalizeRows(data);
+        data.forEach(r=>r._cat = deriveCategory(r));
+        state.rows = data;
+        state.byId = new Map(data.map(r=>[String(r.id),r]));
         wireChips();
         render();
         updateFab();
-        // expose for console debugging
         window.state = state;
-        window.buildQuick = buildQuick;
-      }catch(err){
-        $('#grid').innerHTML = `<div class="muted">Network error. Check console.</div>`;
+      } catch(err){
+        console.error('Supabase load failed:', err);
+        const msg = (err && (err.message || err.error_description || err.hint)) || String(err);
+        $('#grid').innerHTML = `<div class="muted">Load failed: ${msg}.<br/><small>
+          If this is 401/403, enable RLS and add a policy allowing <code>anon</code> to SELECT from <code>public.drum_kits</code>.
+        </small></div>`;
       }
     }
 
