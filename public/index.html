@@ -215,10 +215,11 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    // ===== ENV =====
+    // ===== ENV (UPDATED to your live project) =====
     window.ENV = {
       SUPABASE_URL: "https://fjaconpprrogkiqzkyof.supabase.co",
-      SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhZ3JscGdmZHdtdHpzaWpseWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMDY2MzEsImV4cCI6MjA3NTY4MjYzMX0.yQR332GzntPAKKrElttuEIaec-xAjHlQdRNd4oagbvM"
+      // 👇 your working anon key for fjaconpprrogkiqzkyof
+      SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqYWNvbnBwcnJvZ2tpcXpreW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzNzY4MjYsImV4cCI6MjA3Mzk1MjgyNn0.tb1_-MjYSUFgvUc9h5hWvT22baJQkrZ-JAdfPnEotRs"
     };
 
     // ===== helpers =====
@@ -356,9 +357,12 @@
     const state = { rows:[], byId:new Map(), compare:new Set(), filterLabel:'All' };
 
     async function load(){
+      // preflight log
+      console.log("Supabase URL", ENV.SUPABASE_URL);
+
       const supabase = window.supabase.createClient(ENV.SUPABASE_URL, ENV.SUPABASE_ANON_KEY);
+
       try{
-        // Select only columns that certainly exist + JSON aliases
         const { data, error } = await supabase
           .from('drum_kits')
           .select(`
@@ -384,7 +388,10 @@
         window.state = state; // for console
       } catch(err){
         console.error('Supabase load failed:', err);
-        $('#grid').innerHTML = `<div class="muted">Load failed: ${String(err.message||err)}</div>`;
+        const msg = (err && (err.message || err.error_description || err.hint)) || String(err);
+        $('#grid').innerHTML = `<div class="muted">Load failed: ${msg}.<br/><small>
+          If this is 401/403, make sure the <code>anon</code> RLS policy allows SELECT on <code>public.drum_kits</code>.
+        </small></div>`;
       }
     }
 
