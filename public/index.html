@@ -53,7 +53,7 @@
   .imgbox img{width:100%; height:100%; object-fit:cover; display:block}
   .demo{position:absolute; top:10px; left:10px; background:#ffd400; color:#231a00; font-weight:800;
     border-radius:999px; padding:6px 12px; box-shadow:0 10px 24px rgba(0,0,0,.35); font-size:12px}
-  .content{display:flex; flex-direction:column; gap:8px; padding:12px 12px 14px; min-height:196px}
+  .content{display:flex; flex-direction:column; gap:8px; padding:12px 12px 14px; min-height:176px}
   .title{font-weight:800; margin-top:4px}
 
   .pill{
@@ -239,7 +239,6 @@
     const getUPC = r => r.upc_code || r.upc || r.ean || r.barcode || null;
     const getPath = (obj, path) => path.split('.').reduce((o,k)=> (o && o[k]!==undefined ? o[k] : undefined), obj);
     const coalesce = (...vals) => vals.find(v => v!==undefined && v!==null && v!=='');
-
     const deriveCategory = r=>{
       if (r.category) return r.category;
       const s=(r.slug||'')+' '+(r.name||'');
@@ -258,7 +257,7 @@
          </svg>`);
     };
 
-    // alias map (for fallback computed quick spec table)
+    // ===== alias map =====
     const ALIASES = {
       kits_user:    ['kits_user','user_kits','specs.data.user_kits'],
       kits_factory: ['kits_factory','specs.data.preset_kits'],
@@ -275,7 +274,7 @@
       return undefined;
     };
 
-    // normalize rows a bit
+    // ===== normalize data =====
     function normalizeRows(rows){
       rows.forEach(r=>{
         if (typeof r.specs === 'string') { try { r.specs = JSON.parse(r.specs); } catch { r.specs = {}; } }
@@ -302,7 +301,7 @@
       });
     }
 
-    // quick-spec rendering helpers
+    // ===== quick-spec rendering =====
     function specRow(label, val){
       let v = (val===true)?'Yes' : (val===false||val==null||val==='')?'—' : val;
       return `<tr><td>${label}</td><td style="text-align:right">${v}</td></tr>`;
@@ -353,7 +352,7 @@
       ];
     }
 
-    // state & UI
+    // ===== state & UI =====
     const state = { rows:[], byId:new Map(), compare:new Set(), filterLabel:'All' };
 
     async function load(){
@@ -362,15 +361,16 @@
 
       try{
         const { data, error } = await supabase
-          .from('products_features') // VIEW with quick_specs
+          .from('drum_kits')
           .select(`
             id,name,description,price,upc,upc_code,is_active,slug,category,
             primary_image_url,detail_image_url,on_demo,on_demo_label,
-            features,contents,mesh,usb_midi,bluetooth_audio,
+            features,contents,specs,mesh,usb_midi,bluetooth_audio,
             toms_count,crash_count,ride_zones,kick_tower,
-            kits_factory,sounds,quick_specs
+            kits_factory,sounds,
+            user_kits:specs->data->>user_kits,
+            sounds_total:specs->data->>sounds_total
           `)
-          .eq('is_active', true)
           .order('price', { ascending:false, nullsFirst:false });
 
         if (error) throw error;
@@ -386,7 +386,9 @@
       } catch(err){
         console.error('Supabase load failed:', err);
         const msg = (err && (err.message || err.error_description || err.hint)) || String(err);
-        $('#grid').innerHTML = `<div class="muted">Load failed: ${msg}.</div>`;
+        $('#grid').innerHTML = `<div class="muted">Load failed: ${msg}.<br/><small>
+          If this is 401/403, enable RLS and add a policy allowing <code>anon</code> to SELECT from <code>public.drum_kits</code>.
+        </small></div>`;
       }
     }
 
@@ -422,9 +424,6 @@
         if (r.mesh) pills.push('Mesh');
         if (r.usb_midi) pills.push('USB/MIDI');
         if (r.bluetooth_audio) pills.push('Bluetooth');
-
-        const qs = Array.isArray(r.quick_specs) ? r.quick_specs.slice(0,4) : [];
-
         return `
           <div class="card" data-id="${r.id}">
             <div class="imgbox" data-open><img src="${pickImage(r,'card')}" alt="">${demo}</div>
@@ -432,13 +431,6 @@
               <div class="pill price">${AED(r.price)}</div>
               <div class="title">${r.name||''}</div>
               ${upc?`<div class="muted" style="margin-bottom:2px">UPC: ${upc}</div>`:''}
-
-              ${qs.length ? `
-                <ul class="muted" style="margin:4px 0 2px 18px; list-style:disc">
-                  ${qs.map(s=>`<li>${s}</li>`).join('')}
-                </ul>` : ''
-              }
-
               <div class="tagrow">${pills.map(p=>`<span class="chip">${p}</span>`).join('')}</div>
               <div class="foot">
                 <label><input type="checkbox" data-compare ${state.compare.has(String(r.id))?'checked':''}> Add to compare</label>
@@ -490,18 +482,8 @@
       asList($('#dinc'), r.contents);
       asList($('#dnot'), r.specs?.not_included || r.specs?.data?.not_included || []);
 
-      const quickArr = Array.isArray(r.quick_specs) ? r.quick_specs : null;
-      if (quickArr && quickArr.length) {
-        // render as list
-        $('#dspec').outerHTML = `
-          <ul id="dspec" style="list-style:disc; padding-left:18px; margin:0">
-            ${quickArr.map(s=>`<li>${s}</li>`).join('')}
-          </ul>`;
-      } else {
-        // fallback: auto spec table
-        const quick = buildQuick(r);
-        $('#dspec').innerHTML = quick.map(it => specRow(it.label || it.key || '', qVal(it, r))).join('');
-      }
+      const quick = buildQuick(r);
+      $('#dspec').innerHTML = quick.map(it => specRow(it.label || it.key || '', qVal(it, r))).join('');
 
       const dlg = $('#detail');
       dlg.showModal();
@@ -520,25 +502,13 @@
       if (!rows.length){ cols.innerHTML = '<div class="muted" style="padding:10px">No items selected.</div>'; }
       else{
         cols.innerHTML = rows.map(r=>{
-          const quickArr = Array.isArray(r.quick_specs) ? r.quick_specs : null;
-          const quickTable = !quickArr || !quickArr.length
-            ? buildQuick(r).map(it=>specRow(it.label || it.key || '', qVal(it,r))).join('')
-            : '';
-
+          const q = buildQuick(r);
           return `
             <div class="col" data-id="${r.id}">
               <div class="pad">
                 <div class="pill price" style="margin-bottom:6px">${AED(r.price)}</div>
                 <div class="title" style="margin:0 0 8px">${r.name||''}</div>
-
-                ${
-                  quickArr && quickArr.length
-                    ? `<ul style="list-style:disc; padding-left:18px; margin:0 0 6px">
-                         ${quickArr.map(s=>`<li>${s}</li>`).join('')}
-                       </ul>`
-                    : `<table class="specs">${quickTable}</table>`
-                }
-
+                <table class="specs">${q.map(it=>specRow(it.label || it.key || '', qVal(it,r))).join('')}</table>
                 <div style="display:flex; gap:8px; margin-top:10px">
                   <button class="btn btn-ghost" data-open>Open</button>
                   <button class="btn btn-ghost" data-remove>Remove</button>
@@ -609,129 +579,8 @@
       $('#detail').addEventListener('click', e=>{ if (e.target.closest('[data-close]')) $('#detail').close(); });
     }
 
-    // Wizard scoring & wiring
-    function inBudget(price, band){
-      const [lo, hi] = band.split('-').map(Number);
-      const p = Number(price || 0);
-      return Number.isFinite(lo) && Number.isFinite(hi) && Number.isFinite(p) && p >= lo && p <= hi;
-    }
-    function scoreRow(r, exp, goal, conn, band){
-      let s = 0;
-      if (inBudget(r.price, band)) s += 5;
-
-      const moreKits = Number(r.kits_factory || 0) + Number(r.kits_user || 0);
-      const moreSounds = Number(r.sounds || 0);
-
-      if (exp === 'Beginner') {
-        if (r.mesh) s += 2;
-        if (r.usb_midi) s += 1;
-        if (r.price && r.price <= 5000) s += 1;
-      } else if (exp === 'Intermediate') {
-        s += (moreKits >= 32) ? 2 : 0;
-        s += (moreSounds >= 300) ? 1 : 0;
-      } else {
-        s += (moreKits >= 50) ? 3 : 0;
-        s += (moreSounds >= 500) ? 2 : 0;
-        if (r.bluetooth_audio) s += 1;
-      }
-
-      if (goal === 'Learning') {
-        if (r.mesh) s += 1;
-        if (r.usb_midi) s += 1;
-      } else if (goal === 'Recording') {
-        if (r.usb_midi) s += 2;
-        if (r.bluetooth_audio) s += 1;
-      } else if (goal === 'Live') {
-        if (r.bluetooth_audio) s += 1;
-        if (Number(r.ride_zones || 0) >= 2) s += 1;
-      }
-
-      if (conn === 'USB/MIDI' && r.usb_midi) s += 2;
-      if (conn === 'Bluetooth' && r.bluetooth_audio) s += 2;
-
-      if (deriveCategory(r) === 'Drum Kits') s += 1;
-
-      return s;
-    }
-    function renderWizardResults(rows){
-      if (!rows.length){
-        $('#wizOut').innerHTML = `<div class="muted">No matches for that combination.</div>`;
-        return;
-      }
-      $('#wizOut').innerHTML = `
-        <div style="display:grid; gap:12px; grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">
-          ${rows.map(r=>`
-            <div class="col" style="background:var(--glass);border:1px solid var(--glass-brd);border-radius:12px;overflow:hidden">
-              <div class="pad" style="padding:12px">
-                <div class="pill price" style="margin-bottom:6px">${AED(r.price)}</div>
-                <div class="title" style="margin:0 0 8px">${r.name||''}</div>
-                ${Array.isArray(r.quick_specs) && r.quick_specs.length ? `
-                  <ul style="list-style:disc;padding-left:18px;margin:0">
-                    ${r.quick_specs.slice(0,4).map(s=>`<li>${s}</li>`).join('')}
-                  </ul>` : ''
-                }
-                <div style="display:flex; gap:8px; margin-top:10px">
-                  <button class="btn btn-ghost" data-open="${r.id}">Open</button>
-                  <button class="btn btn-ghost" data-add="${r.id}">Add to compare</button>
-                </div>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      `;
-
-      $$('#wizOut [data-open]').forEach(b=>{
-        b.addEventListener('click', ()=>{
-          const id = b.getAttribute('data-open');
-          $('#wizard').close();
-          openDetail(id);
-        });
-      });
-      $$('#wizOut [data-add]').forEach(b=>{
-        b.addEventListener('click', ()=>{
-          const id = b.getAttribute('data-add');
-          state.compare.add(String(id));
-          updateFab();
-        });
-      });
-    }
-    function wireWizard(){
-      $('#wGo').addEventListener('click', ()=>{
-        const exp  = $('#wExp').value;
-        const band = $('#wBud').value;
-        const goal = $('#wGoal').value;
-        const conn = $('#wConn').value;
-
-        const ranked = state.rows
-          .filter(r => r.price != null && r.is_active !== false)
-          .map(r => ({ r, s: scoreRow(r, exp, goal, conn, band) }))
-          .filter(x => x.s > 0)
-          .sort((a,b)=> b.s - a.s)
-          .slice(0, 6);
-
-        renderWizardResults(ranked.map(x=>x.r));
-      });
-    }
-
-    function updateFab(){
-      const show = state.compare.size>0;
-      const el = document.getElementById('compareFab');
-      el.style.display = show ? 'flex' : 'none';
-      document.getElementById('fabCount').textContent = state.compare.size;
-      document.getElementById('cmpCount').textContent = state.compare.size;
-    }
-    document.getElementById('compareFab').addEventListener('click', ()=>openCompare());
-
-    function wireHeader(){
-      $('#btnCompare').onclick=()=>openCompare();
-      $('#btnWizard').onclick=()=>$('#wizard').showModal();
-      $('#wizard').addEventListener('click', e=>{ if (e.target.closest('[data-close]')) $('#wizard').close(); });
-      $('#detail').addEventListener('click', e=>{ if (e.target.closest('[data-close]')) $('#detail').close(); });
-    }
-
     window.addEventListener('DOMContentLoaded', async ()=>{
       wireHeader();
-      wireWizard();
       await load();
     });
   </script>
