@@ -1,4 +1,5 @@
-window.__ENV__ = {
-  SUPABASE_URL: "https://sagrlpgfdwmtzsijlyjk.supabase.co",
-  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhZ3JscGdmZHdtdHpzaWpseWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMDY2MzEsImV4cCI6MjA3NTY4MjYzMX0.yQR332GzntPAKKrElttuEIaec-xAjHlQdRNd4oagbvM"
+﻿window.ENV = {
+  SUPABASE_URL: "https://fjaconpprrogkiqzkyof.supabase.co",
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqYWNvbnBwcnJvZ2tpcXpreW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzNzY4MjYsImV4cCI6MjA3Mzk1MjgyNn0.tb1_-MjYSUFgvUc9h5hWvT22baJQkrZ-JAdfPnEotRs"
 };
+console.log("✅ env.js loaded", window.ENV.SUPABASE_URL);
